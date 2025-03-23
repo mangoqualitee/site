@@ -1,5 +1,20 @@
 project:
   type: website
+  preview:
+    port: 7777
+    browser: false
+  render:
+    - "*.qmd"
+    - "clones/DynamicsSimulations/README.md"
+    - "clones/DynamicsSimulations/problem01/README.md"
+    - "clones/DynamicsSimulations/problem02/README.md"
+    - "clones/DynamicsSimulations/problem03/README.md"
+    - "clones/DynamicsSimulations/problem04/README.md"
+    - "clones/DynamicsSimulations/problem05/README.md"
+    - "clones/DynamicsSimulations/problem06/README.md"
+    - "clones/DynamicsSimulations/problem07/README.md"
+    - "clones/DynamicsSimulations/problem08/README.md"
+    - "clones/DynamicsSimulations/problem09/README.md"
 
 website:
   title: "vishal's sight"
@@ -8,6 +23,8 @@ website:
       - href: index.qmd
         text: Home
       - about.qmd
+      - href: clones/DynamicsSimulations/README.md
+        text: Dynamics
 
 format:
   html:
