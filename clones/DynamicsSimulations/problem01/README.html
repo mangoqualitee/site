@@ -191,7 +191,7 @@ window.Quarto = {
 </nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content page-columns page-full" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
@@ -343,11 +343,13 @@ window.Quarto = {
 <span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> trajectory_plot</span>
 <span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="animation" class="level1">
+<section id="animation" class="level1 page-columns page-full">
 <h1>Animation</h1>
 <p>The following shows the animation for the solution system. The code corresponding to this animation:</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
 <p>TODO: add springs to visualise</p>
-<div class="quarto-figure quarto-figure-center">
+</div></div><div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="../media/problem01/sol_animation.gif" class="img-fluid figure-img"></p>
 <figcaption>Spring Pendulum Motion</figcaption>
@@ -496,7 +498,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
+      var filterRegex = new RegExp("git@github-vishalpaudel:vishalpaudel\/personal-site\.git");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }

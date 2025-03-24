@@ -194,7 +194,7 @@ window.Quarto = {
 </nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content page-columns page-full" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
@@ -235,7 +235,7 @@ c. With ODE45.
 d. Using (b), solve the equations many times with progressively smaller step size, down to the smallest size you have patience for, and up to the largest size that isn’t crazy. As sensibly as possible, compare the results and use that comparison to estimate the accuracy of each solution. You should be able to find a method to estimate the accuracy of a numerical solution even without knowing the exact solution.  
 e. Using ODE45, solve the equations with various accuracies (use ’reltol’ and ’abstol’, note MATLAB satisfies one or the other, whichever is easiest. So, if you want an accurate solution you need to make both ’reltol’ and ’abstol’ small). Does Matlab do a good job of estimating its own accuracy? Use suitable plots to make your point.  </code></pre>
 </blockquote>
-<section id="a.-write-a-single-file-or-function-write-eulers-method" class="level1">
+<section id="a.-write-a-single-file-or-function-write-eulers-method" class="level1 page-columns page-full">
 <h1>a. Write a single file or function write eulers method</h1>
 <p>In file <a href="./ODESolvers/procedural.jl">./ODESolvers/procedural.jl</a>:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/usr/bin/env julia</span></span>
@@ -373,8 +373,10 @@ e. Using ODE45, solve the equations with various accuracies (use ’reltol’ an
 <div class="sourceCode" id="cb3"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#...</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>Visualization.<span class="fu">makie_animation</span>(sol)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+<div class="no-row-height column-margin column-container"><div class="">
 <p>TODO: TODO of problem 01: visualisation springs</p>
-<div class="quarto-figure quarto-figure-center">
+</div></div><div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="../media/problem03/two_spring_pendulum.gif" class="img-fluid figure-img"></p>
 <figcaption>Two Spring Pendulum Animation without any info</figcaption>
@@ -551,7 +553,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
+      var filterRegex = new RegExp("git@github-vishalpaudel:vishalpaudel\/personal-site\.git");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }

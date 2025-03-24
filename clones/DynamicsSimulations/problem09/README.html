@@ -190,7 +190,7 @@ window.Quarto = {
 </nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content page-columns page-full" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
@@ -232,7 +232,7 @@ window.Quarto = {
 (d) Use larger and larger values of v0 and for each trajectory choose a time interval so the canon at least gets back to the ground. Plot the trajectories (using equal scale for the x and y axis. Plot all curves on one plot. As v → ∞ what is the eventual shape? [Hint: the answer is simple and interesting.]  
 (e) For any given v0 there is a best launch angle θ ∗ for maximizing the range. As v0 → ∞ to what angle does θ ∗ tend? Justify your answer as best you can with careful numerics, analytical work, or both.  </code></pre>
 </blockquote>
-<section id="find-position-vs-time-analytically." class="level1">
+<section id="find-position-vs-time-analytically." class="level1 page-columns page-full">
 <h1>Find position vs time analytically.</h1>
 <p>The corresponding code for this in file <a href="./Ballistics/src/Ballistics.jl">./Ballistics/src/Ballistics.jl</a>:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">analytical_sol</span>(t)</span>
@@ -263,8 +263,10 @@ window.Quarto = {
 <span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> u</span>
 <span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+<div class="no-row-height column-margin column-container"><div class="">
 <p>TODO: Could I have created this analytical solution symbolically?</p>
-</section>
+</div></div></section>
 <section id="find-a-numerical-solution-using-given-parameters" class="level1">
 <h1>Find a numerical solution using given parameters</h1>
 <p>The corresponding code for this in file <a href="./Ballistics/src/Ballistics.jl">./Ballistics/src/Ballistics.jl</a>:</p>
@@ -438,9 +440,119 @@ window.Quarto = {
 </section>
 <section id="use-larger-and-larger-values-of-v0-plot-all-of-their-trajectory-till-ball-hits-ground.-what-happens-to-the-eventual-shape-as-v--" class="level1">
 <h1>Use larger and larger values of v0, plot all of their trajectory till ball hits ground. What happens to the eventual shape as v -&gt; ∞ ?</h1>
+<p>The code for this in file <a href="./Ballistics/src/Ballistics.jl">./Ballistics/src/Ballistics.jl</a>:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ...</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">solve_till_empty</span>(prob)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">conditionatbeggining</span>(u, t, integrator) <span class="op">=</span> t <span class="op">&gt;</span> <span class="fl">0</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">removetstop!</span>(integrator) <span class="op">=</span> <span class="fu">add_tstop!</span>(integrator, ∞)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    removetstopwhenbeginning <span class="op">=</span> <span class="fu">DiscreteCallback</span>(conditionatbeggining,removetstop!)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">condition</span>(u, t, integrator) <span class="op">=</span> u[<span class="fl">2</span>] <span class="op">&lt;</span> <span class="fl">0</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">affect!</span>(integrator) <span class="op">=</span> <span class="fu">terminate!</span>(integrator)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    stopwhenonground <span class="op">=</span> <span class="fu">DiscreteCallback</span>(condition, affect!)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    cb <span class="op">=</span> <span class="fu">CallbackSet</span>(removetstopwhenbeginning, stopwhenonground)</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    sol <span class="op">=</span> <span class="fu">solve</span>(prob, <span class="fu">RK4</span>(), callback <span class="op">=</span> cb, tstops <span class="op">=</span> [<span class="fl">0.1</span>,])</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    sol</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">problem_setup</span>(launchangle, speed0, c)</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    x0, y0 <span class="op">=</span> <span class="fl">0.0</span>, <span class="fl">0.0</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    r0 <span class="op">=</span> [x0; y0]</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    vx0, vy0 <span class="op">=</span> speed0 <span class="op">*</span> [<span class="fu">cos</span>(launchangle); <span class="fu">sin</span>(launchangle)]</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    v0 <span class="op">=</span> [vx0; vy0]</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    u0 <span class="op">=</span> [r0; v0]</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    t0 <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    tend <span class="op">=</span> <span class="fl">1.0</span></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>    tspan <span class="op">=</span> (t0, tend)</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> Parameters.<span class="fu">Param</span>(m <span class="op">=</span> <span class="fl">1</span>, g <span class="op">=</span> <span class="fl">1</span>, c <span class="op">=</span> c)</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>    prob <span class="op">=</span> <span class="fu">ODEProblem</span>(Physics.ballistic!, u0, tspan, p)</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> prob</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>speeds <span class="op">=</span> <span class="fu">range</span>(<span class="fl">0</span>, <span class="fl">100</span>)</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>problems <span class="op">=</span> <span class="fu">problem_setup</span>.(<span class="fu">Ref</span>(<span class="cn">pi</span><span class="op">/</span><span class="fl">4</span>), speeds, <span class="fu">Ref</span>(<span class="fl">1</span>))</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>sols <span class="op">=</span> <span class="fu">solve_till_empty</span>.(problems)</span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>Visualization.<span class="fu">plot_all_trajectories</span>(sols)</span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a><span class="co"># ...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The plot corresponding to this:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../media/problem09/initial_velocity_change.png" class="img-fluid figure-img"></p>
+<figcaption>Increasing intial velocities</figcaption>
+</figure>
+</div>
 </section>
-<section id="plot-speed-verses-best-launch-angle-numerically-or-analyticaly-or-both" class="level1">
+<section id="plot-speed-verses-best-launch-angle-numerically-or-analyticaly-or-both" class="level1 page-columns page-full">
 <h1>Plot speed verses best launch angle, numerically or analyticaly or both</h1>
+<p>I expect 45 degrees to still be consistantly good for launch even with drag.</p>
+<p>Doing this numerically, in file <a href="./Ballistics/src/Ballistics.jl">./Ballistics/src/Benchmarks.jl</a>:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ...</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">best_angle_for_speed</span>(speed0, c)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    launchangles <span class="op">=</span> <span class="cn">pi</span><span class="op">/</span><span class="fl">4</span> <span class="op">.*</span> ((<span class="fu">range</span>(<span class="op">-</span><span class="fl">1.0</span>, <span class="fl">1.0</span>, <span class="fl">300</span>)) <span class="op">.^</span> <span class="fl">3.0</span> <span class="op">.+</span> <span class="fl">1.0</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    max_range <span class="op">=</span> <span class="fl">0</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    argmax_theta <span class="op">=</span> <span class="fl">0</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> launchangle <span class="kw">in</span> launchangles</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>        <span class="co"># problem setup</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>        prob <span class="op">=</span> <span class="fu">problem_setup</span>(launchangle, speed0, c)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>        sol <span class="op">=</span> <span class="fu">solve_till_empty</span>(prob)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>        cur_range <span class="op">=</span> sol.u[<span class="kw">end</span>][<span class="fl">1</span>]</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> cur_range <span class="op">&gt;</span> max_range</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>            max_range <span class="op">=</span> cur_range</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>            argmax_theta <span class="op">=</span> launchangle</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">end</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    argmax_theta</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>speeds <span class="op">=</span> <span class="fl">10.0</span> <span class="op">.^</span> <span class="fu">range</span>(<span class="fl">0.0</span>, <span class="fl">3.1</span>, <span class="fl">100</span>)</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>bestangles <span class="op">=</span> []</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> speed0 <span class="kw">in</span> speeds</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>    bestangle <span class="op">=</span> <span class="fu">best_angle_for_speed</span>(speed0, <span class="fl">1</span>)</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">push!</span>(bestangles, bestangle)</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>Visualization.<span class="fu">plot_best_angle_for_speeds</span>(speeds, bestangles)</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="co"># ...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The weird choice for launchangles is for concentrating numeric choices for launchangles near <span class="math inline">\(\pi \over 4\)</span>. This produces:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../media/problem09/speed_vs_bestangle_c_1.png" class="img-fluid figure-img"></p>
+<figcaption>../media/problem09/speed_vs_bestangle_c_1.png</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../media/problem09/speed_vs_bestangle_c_10.png" class="img-fluid figure-img"></p>
+<figcaption>../media/problem09/speed_vs_bestangle_c_10.png</figcaption>
+</figure>
+</div>
+<p>It seems that my intuition was way off. It seems the best angle quickly becomes closer to zero as the initial velocity increases.</p>
+<p>Let us plot the relation of drag with the best angle for a high velocity (say v = 1200), in file <a href="./Ballistics/src/Ballistics.jl">./Ballistics/src/Ballistics.jl</a>:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>speed0 <span class="op">=</span> <span class="fl">1200.0</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>bestangles <span class="op">=</span> []</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>drags <span class="op">=</span> <span class="fl">2.0</span> <span class="op">.^</span> <span class="fu">range</span>(<span class="fl">1.0</span>, <span class="fl">5.0</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> c <span class="kw">in</span> drags</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    bestangle <span class="op">=</span> <span class="fu">best_angle_for_speed</span>(speed0, c)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">push!</span>(bestangles, bestangle)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>Visualization.<span class="fu">plot_best_angle_vs_drag</span>(drags, bestangles)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>TODO: There isn’t much change in the eventual best angle for large velocities as drag changes. It does not seem right, but the best angle in such case seems to be some constant close to zero. I will explore this more later. The plot generated by above code is:</p>
+</div></div><div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../media/problem09/best_angle_vs_drag.png" class="img-fluid figure-img"></p>
+<figcaption>../media/problem09/best_angle_vs_drag.png</figcaption>
+</figure>
+</div>
 <p>This concludes my attempt of problem09.</p>
 
 
@@ -537,7 +649,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
+      var filterRegex = new RegExp("git@github-vishalpaudel:vishalpaudel\/personal-site\.git");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
