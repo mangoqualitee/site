@@ -1,1 +1,6 @@
 /* css styles */
+
+pre, code, .sourceCode {
+  font-family: Iosevka;
+  /* font-size: 1.1em; */
+}

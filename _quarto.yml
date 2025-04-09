@@ -15,6 +15,12 @@ project:
     - "clones/DynamicsSimulations/problem07/README.md"
     - "clones/DynamicsSimulations/problem08/README.md"
     - "clones/DynamicsSimulations/problem09/README.md"
+    - "clones/DynamicsSimulations/problem10/README.md"
+    - "clones/DynamicsSimulations/problem11/README.md"
+    - "clones/DynamicsSimulations/problem12/README.md"
+    - "clones/DynamicsSimulations/problem13/README.md"
+    - "clones/DynamicsSimulations/problem14/README.md"
+    - "clones/DynamicsSimulations/problem15/README.md"
 
 website:
   title: "vishal's sight"
@@ -31,8 +37,13 @@ format:
     theme:
       - cosmo
       - brand
+      # - sketchy
+      # - pandoc
+      # - litera
     css: styles.css
     toc: true
 
-
-
+    header-includes: |
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/iosevka/index.css">
+    # code-overflow: wrap
+    code-line-numbers: true
