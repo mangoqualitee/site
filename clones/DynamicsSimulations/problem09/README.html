@@ -102,6 +102,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/iosevka/index.css">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -231,38 +232,44 @@ window.Quarto = {
 (c) Compare the numeric and analytic solutions. At t = 2 how big is the error? How does the error depend on specified tolerances or step sizes?  
 (d) Use larger and larger values of v0 and for each trajectory choose a time interval so the canon at least gets back to the ground. Plot the trajectories (using equal scale for the x and y axis. Plot all curves on one plot. As v → ∞ what is the eventual shape? [Hint: the answer is simple and interesting.]  
 (e) For any given v0 there is a best launch angle θ ∗ for maximizing the range. As v0 → ∞ to what angle does θ ∗ tend? Justify your answer as best you can with careful numerics, analytical work, or both.  </code></pre>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../media/problem09/problem09.png" class="img-fluid figure-img"></p>
+<figcaption>../media/problem09/problem09.png</figcaption>
+</figure>
+</div>
 </blockquote>
 <section id="find-position-vs-time-analytically." class="level1 page-columns page-full">
 <h1>Find position vs time analytically.</h1>
 <p>The corresponding code for this in file <a href="./Ballistics/src/Ballistics.jl">./Ballistics/src/Ballistics.jl</a>:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">analytical_sol</span>(t)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    m, g, c <span class="op">=</span> p.mass, p.gravity, p.viscosity</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    u <span class="op">=</span> <span class="fu">zeros</span>((<span class="fl">4</span>,))</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    u[<span class="fl">1</span>] <span class="op">=</span> vx0 <span class="op">*</span> (<span class="op">-</span>c<span class="op">/</span>m) <span class="op">*</span> (<span class="fu">exp</span>((<span class="op">-</span>c<span class="op">/</span>m)<span class="fu">*</span>(t<span class="op">-</span>t0)) <span class="op">-</span> <span class="fl">1</span>)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    u[<span class="fl">2</span>] <span class="op">=</span> ((<span class="fu">vy0+</span>(m<span class="op">*</span>g<span class="op">/</span>c))<span class="fu">*</span>(<span class="op">-</span>c<span class="op">/</span>m)<span class="fu">*</span>(<span class="fu">exp</span>((<span class="op">-</span>c<span class="op">/</span>m)<span class="fu">*</span>(t<span class="op">-</span>t0)) <span class="op">-</span> <span class="fl">1</span>)) <span class="op">+</span> ((<span class="op">-</span>m<span class="op">*</span>g<span class="op">/</span>c)<span class="fu">*</span>(t<span class="op">-</span>t0))</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    u[<span class="fl">3</span>] <span class="op">=</span> (vx0) <span class="op">*</span> (<span class="fu">exp</span>((<span class="op">-</span>c<span class="op">/</span>m)<span class="fu">*</span>(t<span class="op">-</span>t0)))</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    u[<span class="fl">4</span>] <span class="op">=</span> ((vy0) <span class="op">+</span> (m<span class="op">*</span>g<span class="op">/</span>c)) <span class="op">*</span> <span class="fu">exp</span>((<span class="op">-</span>c<span class="op">/</span>m)<span class="fu">*</span>(t<span class="op">-</span>t0)) <span class="op">-</span> (m<span class="op">*</span>g<span class="op">/</span>c)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> u</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">function</span> <span class="fu">analytical_sol</span>(t)</span>
+<span id="cb2-2"><a href="#cb2-2"></a>    m, g, c <span class="op">=</span> p.mass, p.gravity, p.viscosity</span>
+<span id="cb2-3"><a href="#cb2-3"></a></span>
+<span id="cb2-4"><a href="#cb2-4"></a>    u <span class="op">=</span> <span class="fu">zeros</span>((<span class="fl">4</span>,))</span>
+<span id="cb2-5"><a href="#cb2-5"></a>    u[<span class="fl">1</span>] <span class="op">=</span> vx0 <span class="op">*</span> (<span class="op">-</span>c<span class="op">/</span>m) <span class="op">*</span> (<span class="fu">exp</span>((<span class="op">-</span>c<span class="op">/</span>m)<span class="fu">*</span>(t<span class="op">-</span>t0)) <span class="op">-</span> <span class="fl">1</span>)</span>
+<span id="cb2-6"><a href="#cb2-6"></a>    u[<span class="fl">2</span>] <span class="op">=</span> ((<span class="fu">vy0+</span>(m<span class="op">*</span>g<span class="op">/</span>c))<span class="fu">*</span>(<span class="op">-</span>c<span class="op">/</span>m)<span class="fu">*</span>(<span class="fu">exp</span>((<span class="op">-</span>c<span class="op">/</span>m)<span class="fu">*</span>(t<span class="op">-</span>t0)) <span class="op">-</span> <span class="fl">1</span>)) <span class="op">+</span> ((<span class="op">-</span>m<span class="op">*</span>g<span class="op">/</span>c)<span class="fu">*</span>(t<span class="op">-</span>t0))</span>
+<span id="cb2-7"><a href="#cb2-7"></a>    u[<span class="fl">3</span>] <span class="op">=</span> (vx0) <span class="op">*</span> (<span class="fu">exp</span>((<span class="op">-</span>c<span class="op">/</span>m)<span class="fu">*</span>(t<span class="op">-</span>t0)))</span>
+<span id="cb2-8"><a href="#cb2-8"></a>    u[<span class="fl">4</span>] <span class="op">=</span> ((vy0) <span class="op">+</span> (m<span class="op">*</span>g<span class="op">/</span>c)) <span class="op">*</span> <span class="fu">exp</span>((<span class="op">-</span>c<span class="op">/</span>m)<span class="fu">*</span>(t<span class="op">-</span>t0)) <span class="op">-</span> (m<span class="op">*</span>g<span class="op">/</span>c)</span>
+<span id="cb2-9"><a href="#cb2-9"></a></span>
+<span id="cb2-10"><a href="#cb2-10"></a>    <span class="cf">return</span> u</span>
+<span id="cb2-11"><a href="#cb2-11"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>This turned out to be wrong, it was an integral mistake (integration mistake). The corrected version in the same file:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">analytical_sol</span>(t)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    m, g, c <span class="op">=</span> p.mass, p.gravity, p.viscosity</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> x0 <span class="op">+</span> vx0 <span class="op">*</span> ((<span class="op">-</span>m <span class="op">/</span> c) <span class="op">*</span> <span class="fu">exp</span>((c <span class="op">/</span> m) <span class="op">*</span> (t0))) <span class="op">*</span> (<span class="fu">exp</span>((<span class="op">-</span>c <span class="op">/</span> m) <span class="op">*</span> t) <span class="op">-</span> <span class="fu">exp</span>((<span class="op">-</span>c <span class="op">/</span> m) <span class="op">*</span> t0))</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> y0 <span class="op">+</span> ((vy0 <span class="op">+</span> (m <span class="op">*</span> g <span class="op">/</span> c)) <span class="op">*</span> (<span class="op">-</span>m <span class="op">/</span> c) <span class="op">*</span> (<span class="fu">exp</span>((c <span class="op">/</span> m) <span class="op">*</span> t0)) <span class="op">*</span> (<span class="fu">exp</span>((<span class="op">-</span>c <span class="op">/</span> m) <span class="op">*</span> t) <span class="op">-</span> <span class="fu">exp</span>((<span class="op">-</span>c <span class="op">/</span> m) <span class="op">*</span> t0))) <span class="op">+</span> ((<span class="op">-</span>m <span class="op">*</span> g <span class="op">/</span> c) <span class="op">*</span> (t <span class="op">-</span> t0))</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    vx <span class="op">=</span> (vx0) <span class="op">*</span> (<span class="fu">exp</span>((<span class="op">-</span>c <span class="op">/</span> m) <span class="op">*</span> (t <span class="op">-</span> t0)))</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    vy <span class="op">=</span> ((vy0) <span class="op">+</span> (m <span class="op">*</span> g <span class="op">/</span> c)) <span class="op">*</span> <span class="fu">exp</span>((<span class="op">-</span>c <span class="op">/</span> m) <span class="op">*</span> (t <span class="op">-</span> t0)) <span class="op">-</span> (m <span class="op">*</span> g <span class="op">/</span> c)</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    u <span class="op">=</span> <span class="fu">zeros</span>((<span class="fl">4</span>,))</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    u[<span class="fl">1</span>] <span class="op">=</span> x</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    u[<span class="fl">2</span>] <span class="op">=</span> y</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    u[<span class="fl">3</span>] <span class="op">=</span> vx</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    u[<span class="fl">4</span>] <span class="op">=</span> vy</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> u</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">function</span> <span class="fu">analytical_sol</span>(t)</span>
+<span id="cb3-2"><a href="#cb3-2"></a>    m, g, c <span class="op">=</span> p.mass, p.gravity, p.viscosity</span>
+<span id="cb3-3"><a href="#cb3-3"></a></span>
+<span id="cb3-4"><a href="#cb3-4"></a>    x <span class="op">=</span> x0 <span class="op">+</span> vx0 <span class="op">*</span> ((<span class="op">-</span>m <span class="op">/</span> c) <span class="op">*</span> <span class="fu">exp</span>((c <span class="op">/</span> m) <span class="op">*</span> (t0))) <span class="op">*</span> (<span class="fu">exp</span>((<span class="op">-</span>c <span class="op">/</span> m) <span class="op">*</span> t) <span class="op">-</span> <span class="fu">exp</span>((<span class="op">-</span>c <span class="op">/</span> m) <span class="op">*</span> t0))</span>
+<span id="cb3-5"><a href="#cb3-5"></a>    y <span class="op">=</span> y0 <span class="op">+</span> ((vy0 <span class="op">+</span> (m <span class="op">*</span> g <span class="op">/</span> c)) <span class="op">*</span> (<span class="op">-</span>m <span class="op">/</span> c) <span class="op">*</span> (<span class="fu">exp</span>((c <span class="op">/</span> m) <span class="op">*</span> t0)) <span class="op">*</span> (<span class="fu">exp</span>((<span class="op">-</span>c <span class="op">/</span> m) <span class="op">*</span> t) <span class="op">-</span> <span class="fu">exp</span>((<span class="op">-</span>c <span class="op">/</span> m) <span class="op">*</span> t0))) <span class="op">+</span> ((<span class="op">-</span>m <span class="op">*</span> g <span class="op">/</span> c) <span class="op">*</span> (t <span class="op">-</span> t0))</span>
+<span id="cb3-6"><a href="#cb3-6"></a>    vx <span class="op">=</span> (vx0) <span class="op">*</span> (<span class="fu">exp</span>((<span class="op">-</span>c <span class="op">/</span> m) <span class="op">*</span> (t <span class="op">-</span> t0)))</span>
+<span id="cb3-7"><a href="#cb3-7"></a>    vy <span class="op">=</span> ((vy0) <span class="op">+</span> (m <span class="op">*</span> g <span class="op">/</span> c)) <span class="op">*</span> <span class="fu">exp</span>((<span class="op">-</span>c <span class="op">/</span> m) <span class="op">*</span> (t <span class="op">-</span> t0)) <span class="op">-</span> (m <span class="op">*</span> g <span class="op">/</span> c)</span>
+<span id="cb3-8"><a href="#cb3-8"></a></span>
+<span id="cb3-9"><a href="#cb3-9"></a>    u <span class="op">=</span> <span class="fu">zeros</span>((<span class="fl">4</span>,))</span>
+<span id="cb3-10"><a href="#cb3-10"></a>    u[<span class="fl">1</span>] <span class="op">=</span> x</span>
+<span id="cb3-11"><a href="#cb3-11"></a>    u[<span class="fl">2</span>] <span class="op">=</span> y</span>
+<span id="cb3-12"><a href="#cb3-12"></a>    u[<span class="fl">3</span>] <span class="op">=</span> vx</span>
+<span id="cb3-13"><a href="#cb3-13"></a>    u[<span class="fl">4</span>] <span class="op">=</span> vy</span>
+<span id="cb3-14"><a href="#cb3-14"></a></span>
+<span id="cb3-15"><a href="#cb3-15"></a>    <span class="cf">return</span> u</span>
+<span id="cb3-16"><a href="#cb3-16"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 <div class="no-row-height column-margin column-container"><div class="">
 <p>TODO: Could I have created this analytical solution symbolically?</p>
@@ -270,26 +277,26 @@ window.Quarto = {
 <section id="find-a-numerical-solution-using-given-parameters" class="level1">
 <h1>Find a numerical solution using given parameters</h1>
 <p>The corresponding code for this in file <a href="./Ballistics/src/Ballistics.jl">./Ballistics/src/Ballistics.jl</a>:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">DifferentialEquations</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#...</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># problem setup</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>x0, y0 <span class="op">=</span> <span class="fl">0.0</span>, <span class="fl">0.0</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>r0 <span class="op">=</span> [x0; y0]</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>speed0 <span class="op">=</span> <span class="fl">1</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>launchangle <span class="op">=</span> <span class="cn">pi</span> <span class="op">/</span> <span class="fl">4</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>vx0, vy0 <span class="op">=</span> speed0 <span class="op">*</span> [<span class="fu">cos</span>(launchangle); <span class="fu">sin</span>(launchangle)]</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>v0 <span class="op">=</span> [vx0; vy0]</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>u0 <span class="op">=</span> [r0; v0]</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>t0 <span class="op">=</span> <span class="fl">0.0</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>tend <span class="op">=</span> <span class="fl">1.0</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>tspan <span class="op">=</span> (t0, tend)</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> Parameters.<span class="fu">Param</span>(m<span class="op">=</span><span class="fl">1</span>, g<span class="op">=</span><span class="fl">1</span>, c<span class="op">=</span><span class="fl">1</span>)</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>prob <span class="op">=</span> <span class="fu">ODEProblem</span>(Physics.ballistic!, u0, tspan, p)</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">#...</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>sol_numeric <span class="op">=</span> <span class="fu">solve</span>(prob)</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="co">#...</span></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>Visualization.<span class="fu">plot_trajectory</span>(sol_numeric.u)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb4-1"><a href="#cb4-1"></a><span class="im">using</span> <span class="bu">DifferentialEquations</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="co">#...</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="co"># problem setup</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a>x0, y0 <span class="op">=</span> <span class="fl">0.0</span>, <span class="fl">0.0</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a>r0 <span class="op">=</span> [x0; y0]</span>
+<span id="cb4-6"><a href="#cb4-6"></a>speed0 <span class="op">=</span> <span class="fl">1</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a>launchangle <span class="op">=</span> <span class="cn">pi</span> <span class="op">/</span> <span class="fl">4</span></span>
+<span id="cb4-8"><a href="#cb4-8"></a>vx0, vy0 <span class="op">=</span> speed0 <span class="op">*</span> [<span class="fu">cos</span>(launchangle); <span class="fu">sin</span>(launchangle)]</span>
+<span id="cb4-9"><a href="#cb4-9"></a>v0 <span class="op">=</span> [vx0; vy0]</span>
+<span id="cb4-10"><a href="#cb4-10"></a>u0 <span class="op">=</span> [r0; v0]</span>
+<span id="cb4-11"><a href="#cb4-11"></a></span>
+<span id="cb4-12"><a href="#cb4-12"></a>t0 <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="cb4-13"><a href="#cb4-13"></a>tend <span class="op">=</span> <span class="fl">1.0</span></span>
+<span id="cb4-14"><a href="#cb4-14"></a>tspan <span class="op">=</span> (t0, tend)</span>
+<span id="cb4-15"><a href="#cb4-15"></a>p <span class="op">=</span> Parameters.<span class="fu">Param</span>(m<span class="op">=</span><span class="fl">1</span>, g<span class="op">=</span><span class="fl">1</span>, c<span class="op">=</span><span class="fl">1</span>)</span>
+<span id="cb4-16"><a href="#cb4-16"></a>prob <span class="op">=</span> <span class="fu">ODEProblem</span>(Physics.ballistic!, u0, tspan, p)</span>
+<span id="cb4-17"><a href="#cb4-17"></a><span class="co">#...</span></span>
+<span id="cb4-18"><a href="#cb4-18"></a>sol_numeric <span class="op">=</span> <span class="fu">solve</span>(prob)</span>
+<span id="cb4-19"><a href="#cb4-19"></a><span class="co">#...</span></span>
+<span id="cb4-20"><a href="#cb4-20"></a>Visualization.<span class="fu">plot_trajectory</span>(sol_numeric.u)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>This numerical solution gives the following trajectory:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -302,64 +309,64 @@ window.Quarto = {
 <h1>Compare the numeric and analytics solutions? Plot time vs error. Plot step size and tolerances vs error.</h1>
 <p>For various initial conditions, the numeric and analytical solutions on the same graph, I was shifting the analytic in x direction by 0.1 unit to be able view both, otherwise they were overlapping with the default tolerances, but then I ended up using a non-dynamic step size explicit solver:</p>
 <p>In file <a href="./Ballistics/src/Benchmarks.jl">./Ballistics/src/Benchmarks.jl</a>:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> Benchmarks</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">DifferentialEquations</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">LinearAlgebra</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Abs error for various step sizes</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">abs_error_vs_step_sizes</span>(prob, analytical_solve)</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># step_sizes = 10.0 .^ range(-1, -15, step=-1)</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    step_sizes <span class="op">=</span> <span class="fl">10.0</span> <span class="op">.^</span> <span class="fu">range</span>(<span class="op">-</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">5</span>, step<span class="op">=-</span><span class="fl">1</span>)</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    abs_errors_midpoint <span class="op">=</span> <span class="fu">Vector</span><span class="dt">{Union{Missing, Float64}}</span>(<span class="cn">missing</span>, <span class="fu">length</span>(step_sizes))</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    abs_errors_rk4 <span class="op">=</span> <span class="fu">Vector</span><span class="dt">{Union{Missing, Float64}}</span>(<span class="cn">missing</span>, <span class="fu">length</span>(step_sizes))</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (i,Δh) <span class="kw">in</span> <span class="fu">enumerate</span>(step_sizes)</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>        sol_numeric_midpoint <span class="op">=</span> <span class="fu">solve</span>(prob, <span class="fu">Midpoint</span>(), dt<span class="op">=</span>Δh, adaptive<span class="op">=</span><span class="cn">false</span>, save_everystep<span class="op">=</span><span class="cn">false</span>)[<span class="kw">end</span>]</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>        sol_numeric_rk4 <span class="op">=</span> <span class="fu">solve</span>(prob, <span class="fu">RK4</span>(), dt<span class="op">=</span>Δh, adaptive<span class="op">=</span><span class="cn">false</span>, save_everystep<span class="op">=</span><span class="cn">false</span>)[<span class="kw">end</span>]</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>        tend <span class="op">=</span> prob.tspan[<span class="fl">2</span>]</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>        sol_analytic <span class="op">=</span> <span class="fu">analytical_solve</span>(tend)</span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>        separation_midpoint <span class="op">=</span> sol_numeric_midpoint <span class="op">-</span> sol_analytic</span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>        separation_rk4 <span class="op">=</span> sol_numeric_rk4 <span class="op">-</span> sol_analytic</span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>        error_midpoint <span class="op">=</span> <span class="fu">norm</span>(separation_midpoint)</span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>        error_rk4 <span class="op">=</span> <span class="fu">norm</span>(separation_rk4)</span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>        abs_errors_midpoint[i] <span class="op">=</span> error_midpoint</span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>        abs_errors_rk4[i] <span class="op">=</span> error_rk4</span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    log_errors_midpoint <span class="op">=</span> <span class="fu">log10</span>.(abs_errors_midpoint)</span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>    log_errors_rk4 <span class="op">=</span> <span class="fu">log10</span>.(abs_errors_rk4)</span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>    log_errors_dict <span class="op">=</span> <span class="fu">Dict</span>(<span class="st">"midpoint"</span><span class="op">=&gt;</span>log_errors_midpoint, <span class="st">"rk4"</span><span class="op">=&gt;</span> log_errors_rk4)</span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>    log_steps <span class="op">=</span> <span class="fu">log10</span>.(step_sizes)</span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> log_steps, log_errors_dict</span>
-<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
-<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Abs error for all times</span></span>
-<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">error_vs_time</span>(prob, analytical_solve)</span>
-<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>    N <span class="op">=</span> <span class="fl">5</span></span>
-<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>    step_sizes <span class="op">=</span> <span class="fl">10.0</span> <span class="op">.^</span> <span class="fu">range</span>(<span class="op">-</span><span class="fl">1</span>, <span class="op">-</span>N, step<span class="op">=-</span><span class="fl">1</span>)</span>
-<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>    time_histories <span class="op">=</span> <span class="fu">Vector</span><span class="dt">{Union{Missing, Vector{Float64}}}</span>(<span class="cn">missing</span>, <span class="fu">length</span>(step_sizes))</span>
-<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>    error_histories <span class="op">=</span> <span class="fu">Vector</span><span class="dt">{Union{Missing, Vector{Float64}}}</span>(<span class="cn">missing</span>, <span class="fu">length</span>(step_sizes))</span>
-<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (i,Δh) <span class="kw">in</span> <span class="fu">enumerate</span>(step_sizes)</span>
-<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>        sol <span class="op">=</span> <span class="fu">solve</span>(prob, <span class="fu">Midpoint</span>(), dt<span class="op">=</span>Δh, adaptive<span class="op">=</span><span class="cn">false</span>, save_everystep<span class="op">=</span><span class="cn">true</span>)</span>
-<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>        timestamps <span class="op">=</span> sol.t</span>
-<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>        sol_numeric_midpoint <span class="op">=</span> sol.u</span>
-<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a>        sol_analytic <span class="op">=</span> <span class="fu">analytical_solve</span>.(timestamps)</span>
-<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>        separations <span class="op">=</span> sol_numeric_midpoint <span class="op">.-</span> sol_analytic</span>
-<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>        manhatten_errors <span class="op">=</span> <span class="fu">norm</span>.(separations, <span class="fu">Ref</span>(<span class="fl">1</span>))</span>
-<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>        error_histories[i] <span class="op">=</span> <span class="fu">log10</span>.(manhatten_errors)</span>
-<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>        time_histories[i] <span class="op">=</span> timestamps</span>
-<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
-<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> time_histories, error_histories</span>
-<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
-<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span> <span class="co"># module Benchmarks</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">module</span> Benchmarks</span>
+<span id="cb5-2"><a href="#cb5-2"></a></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="im">using</span> <span class="bu">DifferentialEquations</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="im">using</span> <span class="bu">LinearAlgebra</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a></span>
+<span id="cb5-6"><a href="#cb5-6"></a><span class="co"># Abs error for various step sizes</span></span>
+<span id="cb5-7"><a href="#cb5-7"></a><span class="kw">function</span> <span class="fu">abs_error_vs_step_sizes</span>(prob, analytical_solve)</span>
+<span id="cb5-8"><a href="#cb5-8"></a>    <span class="co"># step_sizes = 10.0 .^ range(-1, -15, step=-1)</span></span>
+<span id="cb5-9"><a href="#cb5-9"></a>    step_sizes <span class="op">=</span> <span class="fl">10.0</span> <span class="op">.^</span> <span class="fu">range</span>(<span class="op">-</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">5</span>, step<span class="op">=-</span><span class="fl">1</span>)</span>
+<span id="cb5-10"><a href="#cb5-10"></a>    abs_errors_midpoint <span class="op">=</span> <span class="fu">Vector</span><span class="dt">{Union{Missing, Float64}}</span>(<span class="cn">missing</span>, <span class="fu">length</span>(step_sizes))</span>
+<span id="cb5-11"><a href="#cb5-11"></a>    abs_errors_rk4 <span class="op">=</span> <span class="fu">Vector</span><span class="dt">{Union{Missing, Float64}}</span>(<span class="cn">missing</span>, <span class="fu">length</span>(step_sizes))</span>
+<span id="cb5-12"><a href="#cb5-12"></a></span>
+<span id="cb5-13"><a href="#cb5-13"></a>    <span class="cf">for</span> (i,Δh) <span class="kw">in</span> <span class="fu">enumerate</span>(step_sizes)</span>
+<span id="cb5-14"><a href="#cb5-14"></a>        sol_numeric_midpoint <span class="op">=</span> <span class="fu">solve</span>(prob, <span class="fu">Midpoint</span>(), dt<span class="op">=</span>Δh, adaptive<span class="op">=</span><span class="cn">false</span>, save_everystep<span class="op">=</span><span class="cn">false</span>)[<span class="kw">end</span>]</span>
+<span id="cb5-15"><a href="#cb5-15"></a>        sol_numeric_rk4 <span class="op">=</span> <span class="fu">solve</span>(prob, <span class="fu">RK4</span>(), dt<span class="op">=</span>Δh, adaptive<span class="op">=</span><span class="cn">false</span>, save_everystep<span class="op">=</span><span class="cn">false</span>)[<span class="kw">end</span>]</span>
+<span id="cb5-16"><a href="#cb5-16"></a>        tend <span class="op">=</span> prob.tspan[<span class="fl">2</span>]</span>
+<span id="cb5-17"><a href="#cb5-17"></a>        sol_analytic <span class="op">=</span> <span class="fu">analytical_solve</span>(tend)</span>
+<span id="cb5-18"><a href="#cb5-18"></a></span>
+<span id="cb5-19"><a href="#cb5-19"></a>        separation_midpoint <span class="op">=</span> sol_numeric_midpoint <span class="op">-</span> sol_analytic</span>
+<span id="cb5-20"><a href="#cb5-20"></a>        separation_rk4 <span class="op">=</span> sol_numeric_rk4 <span class="op">-</span> sol_analytic</span>
+<span id="cb5-21"><a href="#cb5-21"></a>        error_midpoint <span class="op">=</span> <span class="fu">norm</span>(separation_midpoint)</span>
+<span id="cb5-22"><a href="#cb5-22"></a>        error_rk4 <span class="op">=</span> <span class="fu">norm</span>(separation_rk4)</span>
+<span id="cb5-23"><a href="#cb5-23"></a>    </span>
+<span id="cb5-24"><a href="#cb5-24"></a>        abs_errors_midpoint[i] <span class="op">=</span> error_midpoint</span>
+<span id="cb5-25"><a href="#cb5-25"></a>        abs_errors_rk4[i] <span class="op">=</span> error_rk4</span>
+<span id="cb5-26"><a href="#cb5-26"></a>    <span class="cf">end</span></span>
+<span id="cb5-27"><a href="#cb5-27"></a></span>
+<span id="cb5-28"><a href="#cb5-28"></a>    log_errors_midpoint <span class="op">=</span> <span class="fu">log10</span>.(abs_errors_midpoint)</span>
+<span id="cb5-29"><a href="#cb5-29"></a>    log_errors_rk4 <span class="op">=</span> <span class="fu">log10</span>.(abs_errors_rk4)</span>
+<span id="cb5-30"><a href="#cb5-30"></a>    log_errors_dict <span class="op">=</span> <span class="fu">Dict</span>(<span class="st">"midpoint"</span><span class="op">=&gt;</span>log_errors_midpoint, <span class="st">"rk4"</span><span class="op">=&gt;</span> log_errors_rk4)</span>
+<span id="cb5-31"><a href="#cb5-31"></a>    log_steps <span class="op">=</span> <span class="fu">log10</span>.(step_sizes)</span>
+<span id="cb5-32"><a href="#cb5-32"></a></span>
+<span id="cb5-33"><a href="#cb5-33"></a>    <span class="cf">return</span> log_steps, log_errors_dict</span>
+<span id="cb5-34"><a href="#cb5-34"></a><span class="kw">end</span></span>
+<span id="cb5-35"><a href="#cb5-35"></a></span>
+<span id="cb5-36"><a href="#cb5-36"></a><span class="co"># Abs error for all times</span></span>
+<span id="cb5-37"><a href="#cb5-37"></a><span class="kw">function</span> <span class="fu">error_vs_time</span>(prob, analytical_solve)</span>
+<span id="cb5-38"><a href="#cb5-38"></a>    N <span class="op">=</span> <span class="fl">5</span></span>
+<span id="cb5-39"><a href="#cb5-39"></a>    step_sizes <span class="op">=</span> <span class="fl">10.0</span> <span class="op">.^</span> <span class="fu">range</span>(<span class="op">-</span><span class="fl">1</span>, <span class="op">-</span>N, step<span class="op">=-</span><span class="fl">1</span>)</span>
+<span id="cb5-40"><a href="#cb5-40"></a>    time_histories <span class="op">=</span> <span class="fu">Vector</span><span class="dt">{Union{Missing, Vector{Float64}}}</span>(<span class="cn">missing</span>, <span class="fu">length</span>(step_sizes))</span>
+<span id="cb5-41"><a href="#cb5-41"></a>    error_histories <span class="op">=</span> <span class="fu">Vector</span><span class="dt">{Union{Missing, Vector{Float64}}}</span>(<span class="cn">missing</span>, <span class="fu">length</span>(step_sizes))</span>
+<span id="cb5-42"><a href="#cb5-42"></a>    <span class="cf">for</span> (i,Δh) <span class="kw">in</span> <span class="fu">enumerate</span>(step_sizes)</span>
+<span id="cb5-43"><a href="#cb5-43"></a>        sol <span class="op">=</span> <span class="fu">solve</span>(prob, <span class="fu">Midpoint</span>(), dt<span class="op">=</span>Δh, adaptive<span class="op">=</span><span class="cn">false</span>, save_everystep<span class="op">=</span><span class="cn">true</span>)</span>
+<span id="cb5-44"><a href="#cb5-44"></a></span>
+<span id="cb5-45"><a href="#cb5-45"></a>        timestamps <span class="op">=</span> sol.t</span>
+<span id="cb5-46"><a href="#cb5-46"></a>        sol_numeric_midpoint <span class="op">=</span> sol.u</span>
+<span id="cb5-47"><a href="#cb5-47"></a>        sol_analytic <span class="op">=</span> <span class="fu">analytical_solve</span>.(timestamps)</span>
+<span id="cb5-48"><a href="#cb5-48"></a></span>
+<span id="cb5-49"><a href="#cb5-49"></a>        separations <span class="op">=</span> sol_numeric_midpoint <span class="op">.-</span> sol_analytic</span>
+<span id="cb5-50"><a href="#cb5-50"></a>        manhatten_errors <span class="op">=</span> <span class="fu">norm</span>.(separations, <span class="fu">Ref</span>(<span class="fl">1</span>))</span>
+<span id="cb5-51"><a href="#cb5-51"></a>        error_histories[i] <span class="op">=</span> <span class="fu">log10</span>.(manhatten_errors)</span>
+<span id="cb5-52"><a href="#cb5-52"></a>        time_histories[i] <span class="op">=</span> timestamps</span>
+<span id="cb5-53"><a href="#cb5-53"></a>    <span class="cf">end</span></span>
+<span id="cb5-54"><a href="#cb5-54"></a>    <span class="cf">return</span> time_histories, error_histories</span>
+<span id="cb5-55"><a href="#cb5-55"></a><span class="kw">end</span></span>
+<span id="cb5-56"><a href="#cb5-56"></a></span>
+<span id="cb5-57"><a href="#cb5-57"></a></span>
+<span id="cb5-58"><a href="#cb5-58"></a><span class="kw">end</span> <span class="co"># module Benchmarks</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="../media/problem09/numeric_and_analytical_trajectories.png" class="img-fluid figure-img"></p>
@@ -388,33 +395,33 @@ window.Quarto = {
 </figure>
 </div>
 <p>Now, I will change the relative tolerance and absolute tolerance. In file <a href="./Ballistics/src/Benchmarks.jl">./Ballistics/src/Benchmarks.jl</a>:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">tolerances_vs_error</span>(prob, analytical_solve)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    N <span class="op">=</span> <span class="fl">15</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    error_matrix <span class="op">=</span> <span class="fu">Matrix</span><span class="dt">{Float64}</span>(<span class="cn">undef</span>, N, N)</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    num_granularity <span class="op">=</span> N<span class="op">+</span><span class="fl">7</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    abstols <span class="op">=</span> <span class="fl">10.0</span> <span class="op">.^</span> <span class="fu">range</span>(<span class="fl">7</span>, <span class="op">-</span>N, length<span class="op">=</span>num_granularity)</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    reltols <span class="op">=</span> <span class="fl">10.0</span> <span class="op">.^</span> <span class="fu">range</span>(<span class="fl">7</span>, <span class="op">-</span>N, length<span class="op">=</span>num_granularity)</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    num_samples <span class="op">=</span> <span class="fu">length</span>(abstols)<span class="fu">*length</span>(reltols)</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    xs <span class="op">=</span> <span class="fu">Vector</span><span class="dt">{Float64}</span>(<span class="cn">undef</span>, num_samples)</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    ys <span class="op">=</span> <span class="fu">Vector</span><span class="dt">{Float64}</span>(<span class="cn">undef</span>, num_samples)</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    zs <span class="op">=</span> <span class="fu">Vector</span><span class="dt">{Float64}</span>(<span class="cn">undef</span>, num_samples)</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (i, abstol) <span class="kw">in</span> <span class="fu">enumerate</span>(abstols)</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> (j, reltol) <span class="kw">in</span> <span class="fu">enumerate</span>(reltols)</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>            sol_numeric <span class="op">=</span> <span class="fu">solve</span>(prob, <span class="fu">Midpoint</span>(), adaptive<span class="op">=</span><span class="cn">true</span>, save_everystep<span class="op">=</span><span class="cn">false</span>, abstol<span class="op">=</span>abstol, reltol<span class="op">=</span>reltol)[<span class="kw">end</span>]</span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>            sol_analytic <span class="op">=</span> <span class="fu">analytical_solve</span>(prob.tspan[<span class="fl">2</span>])</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>            separation <span class="op">=</span> sol_numeric <span class="op">-</span> sol_analytic</span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>            error <span class="op">=</span> <span class="fu">norm</span>(separation)</span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>            xs[<span class="fu">i+num_granularity*</span>(j<span class="op">-</span><span class="fl">1</span>)] <span class="op">=</span> abstol</span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>            ys[<span class="fu">i+num_granularity*</span>(j<span class="op">-</span><span class="fl">1</span>)] <span class="op">=</span> reltol</span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>            zs[<span class="fu">i+num_granularity*</span>(j<span class="op">-</span><span class="fl">1</span>)] <span class="op">=</span> error</span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>        <span class="cf">end</span></span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>    xs,ys,zs</span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">function</span> <span class="fu">tolerances_vs_error</span>(prob, analytical_solve)</span>
+<span id="cb6-2"><a href="#cb6-2"></a>    N <span class="op">=</span> <span class="fl">15</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a>    error_matrix <span class="op">=</span> <span class="fu">Matrix</span><span class="dt">{Float64}</span>(<span class="cn">undef</span>, N, N)</span>
+<span id="cb6-4"><a href="#cb6-4"></a>    num_granularity <span class="op">=</span> N<span class="op">+</span><span class="fl">7</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a>    abstols <span class="op">=</span> <span class="fl">10.0</span> <span class="op">.^</span> <span class="fu">range</span>(<span class="fl">7</span>, <span class="op">-</span>N, length<span class="op">=</span>num_granularity)</span>
+<span id="cb6-6"><a href="#cb6-6"></a>    reltols <span class="op">=</span> <span class="fl">10.0</span> <span class="op">.^</span> <span class="fu">range</span>(<span class="fl">7</span>, <span class="op">-</span>N, length<span class="op">=</span>num_granularity)</span>
+<span id="cb6-7"><a href="#cb6-7"></a></span>
+<span id="cb6-8"><a href="#cb6-8"></a>    num_samples <span class="op">=</span> <span class="fu">length</span>(abstols)<span class="fu">*length</span>(reltols)</span>
+<span id="cb6-9"><a href="#cb6-9"></a></span>
+<span id="cb6-10"><a href="#cb6-10"></a>    xs <span class="op">=</span> <span class="fu">Vector</span><span class="dt">{Float64}</span>(<span class="cn">undef</span>, num_samples)</span>
+<span id="cb6-11"><a href="#cb6-11"></a>    ys <span class="op">=</span> <span class="fu">Vector</span><span class="dt">{Float64}</span>(<span class="cn">undef</span>, num_samples)</span>
+<span id="cb6-12"><a href="#cb6-12"></a>    zs <span class="op">=</span> <span class="fu">Vector</span><span class="dt">{Float64}</span>(<span class="cn">undef</span>, num_samples)</span>
+<span id="cb6-13"><a href="#cb6-13"></a></span>
+<span id="cb6-14"><a href="#cb6-14"></a>    <span class="cf">for</span> (i, abstol) <span class="kw">in</span> <span class="fu">enumerate</span>(abstols)</span>
+<span id="cb6-15"><a href="#cb6-15"></a>        <span class="cf">for</span> (j, reltol) <span class="kw">in</span> <span class="fu">enumerate</span>(reltols)</span>
+<span id="cb6-16"><a href="#cb6-16"></a>            sol_numeric <span class="op">=</span> <span class="fu">solve</span>(prob, <span class="fu">Midpoint</span>(), adaptive<span class="op">=</span><span class="cn">true</span>, save_everystep<span class="op">=</span><span class="cn">false</span>, abstol<span class="op">=</span>abstol, reltol<span class="op">=</span>reltol)[<span class="kw">end</span>]</span>
+<span id="cb6-17"><a href="#cb6-17"></a>            sol_analytic <span class="op">=</span> <span class="fu">analytical_solve</span>(prob.tspan[<span class="fl">2</span>])</span>
+<span id="cb6-18"><a href="#cb6-18"></a></span>
+<span id="cb6-19"><a href="#cb6-19"></a>            separation <span class="op">=</span> sol_numeric <span class="op">-</span> sol_analytic</span>
+<span id="cb6-20"><a href="#cb6-20"></a>            error <span class="op">=</span> <span class="fu">norm</span>(separation)</span>
+<span id="cb6-21"><a href="#cb6-21"></a>            xs[<span class="fu">i+num_granularity*</span>(j<span class="op">-</span><span class="fl">1</span>)] <span class="op">=</span> abstol</span>
+<span id="cb6-22"><a href="#cb6-22"></a>            ys[<span class="fu">i+num_granularity*</span>(j<span class="op">-</span><span class="fl">1</span>)] <span class="op">=</span> reltol</span>
+<span id="cb6-23"><a href="#cb6-23"></a>            zs[<span class="fu">i+num_granularity*</span>(j<span class="op">-</span><span class="fl">1</span>)] <span class="op">=</span> error</span>
+<span id="cb6-24"><a href="#cb6-24"></a>        <span class="cf">end</span></span>
+<span id="cb6-25"><a href="#cb6-25"></a>    <span class="cf">end</span></span>
+<span id="cb6-26"><a href="#cb6-26"></a>    xs,ys,zs</span>
+<span id="cb6-27"><a href="#cb6-27"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Just by mistake I ran this for large (&gt;1.0) tolerances. Below is the plot:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -441,44 +448,44 @@ window.Quarto = {
 <section id="use-larger-and-larger-values-of-v0-plot-all-of-their-trajectory-till-ball-hits-ground.-what-happens-to-the-eventual-shape-as-v--" class="level1">
 <h1>Use larger and larger values of v0, plot all of their trajectory till ball hits ground. What happens to the eventual shape as v -&gt; ∞ ?</h1>
 <p>The code for this in file <a href="./Ballistics/src/Ballistics.jl">./Ballistics/src/Ballistics.jl</a>:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ...</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">solve_till_empty</span>(prob)</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">conditionatbeggining</span>(u, t, integrator) <span class="op">=</span> t <span class="op">&gt;</span> <span class="fl">0</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">removetstop!</span>(integrator) <span class="op">=</span> <span class="fu">add_tstop!</span>(integrator, ∞)</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    removetstopwhenbeginning <span class="op">=</span> <span class="fu">DiscreteCallback</span>(conditionatbeggining,removetstop!)</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">condition</span>(u, t, integrator) <span class="op">=</span> u[<span class="fl">2</span>] <span class="op">&lt;</span> <span class="fl">0</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">affect!</span>(integrator) <span class="op">=</span> <span class="fu">terminate!</span>(integrator)</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    stopwhenonground <span class="op">=</span> <span class="fu">DiscreteCallback</span>(condition, affect!)</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    cb <span class="op">=</span> <span class="fu">CallbackSet</span>(removetstopwhenbeginning, stopwhenonground)</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    sol <span class="op">=</span> <span class="fu">solve</span>(prob, <span class="fu">RK4</span>(), callback <span class="op">=</span> cb, tstops <span class="op">=</span> [<span class="fl">0.1</span>,])</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    sol</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">problem_setup</span>(launchangle, speed0, c)</span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    x0, y0 <span class="op">=</span> <span class="fl">0.0</span>, <span class="fl">0.0</span></span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    r0 <span class="op">=</span> [x0; y0]</span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    vx0, vy0 <span class="op">=</span> speed0 <span class="op">*</span> [<span class="fu">cos</span>(launchangle); <span class="fu">sin</span>(launchangle)]</span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    v0 <span class="op">=</span> [vx0; vy0]</span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    u0 <span class="op">=</span> [r0; v0]</span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    t0 <span class="op">=</span> <span class="fl">0.0</span></span>
-<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    tend <span class="op">=</span> <span class="fl">1.0</span></span>
-<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>    tspan <span class="op">=</span> (t0, tend)</span>
-<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> Parameters.<span class="fu">Param</span>(m <span class="op">=</span> <span class="fl">1</span>, g <span class="op">=</span> <span class="fl">1</span>, c <span class="op">=</span> c)</span>
-<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>    prob <span class="op">=</span> <span class="fu">ODEProblem</span>(Physics.ballistic!, u0, tspan, p)</span>
-<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> prob</span>
-<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
-<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>speeds <span class="op">=</span> <span class="fu">range</span>(<span class="fl">0</span>, <span class="fl">100</span>)</span>
-<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>problems <span class="op">=</span> <span class="fu">problem_setup</span>.(<span class="fu">Ref</span>(<span class="cn">pi</span><span class="op">/</span><span class="fl">4</span>), speeds, <span class="fu">Ref</span>(<span class="fl">1</span>))</span>
-<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>sols <span class="op">=</span> <span class="fu">solve_till_empty</span>.(problems)</span>
-<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>Visualization.<span class="fu">plot_all_trajectories</span>(sols)</span>
-<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a><span class="co"># ...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb7-1"><a href="#cb7-1"></a><span class="co"># ...</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="kw">function</span> <span class="fu">solve_till_empty</span>(prob)</span>
+<span id="cb7-4"><a href="#cb7-4"></a>    <span class="fu">conditionatbeggining</span>(u, t, integrator) <span class="op">=</span> t <span class="op">&gt;</span> <span class="fl">0</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a>    <span class="fu">removetstop!</span>(integrator) <span class="op">=</span> <span class="fu">add_tstop!</span>(integrator, ∞)</span>
+<span id="cb7-6"><a href="#cb7-6"></a>    removetstopwhenbeginning <span class="op">=</span> <span class="fu">DiscreteCallback</span>(conditionatbeggining,removetstop!)</span>
+<span id="cb7-7"><a href="#cb7-7"></a></span>
+<span id="cb7-8"><a href="#cb7-8"></a>    <span class="fu">condition</span>(u, t, integrator) <span class="op">=</span> u[<span class="fl">2</span>] <span class="op">&lt;</span> <span class="fl">0</span></span>
+<span id="cb7-9"><a href="#cb7-9"></a>    <span class="fu">affect!</span>(integrator) <span class="op">=</span> <span class="fu">terminate!</span>(integrator)</span>
+<span id="cb7-10"><a href="#cb7-10"></a>    stopwhenonground <span class="op">=</span> <span class="fu">DiscreteCallback</span>(condition, affect!)</span>
+<span id="cb7-11"><a href="#cb7-11"></a></span>
+<span id="cb7-12"><a href="#cb7-12"></a>    cb <span class="op">=</span> <span class="fu">CallbackSet</span>(removetstopwhenbeginning, stopwhenonground)</span>
+<span id="cb7-13"><a href="#cb7-13"></a>    sol <span class="op">=</span> <span class="fu">solve</span>(prob, <span class="fu">RK4</span>(), callback <span class="op">=</span> cb, tstops <span class="op">=</span> [<span class="fl">0.1</span>,])</span>
+<span id="cb7-14"><a href="#cb7-14"></a></span>
+<span id="cb7-15"><a href="#cb7-15"></a>    sol</span>
+<span id="cb7-16"><a href="#cb7-16"></a><span class="kw">end</span></span>
+<span id="cb7-17"><a href="#cb7-17"></a></span>
+<span id="cb7-18"><a href="#cb7-18"></a><span class="kw">function</span> <span class="fu">problem_setup</span>(launchangle, speed0, c)</span>
+<span id="cb7-19"><a href="#cb7-19"></a>    x0, y0 <span class="op">=</span> <span class="fl">0.0</span>, <span class="fl">0.0</span></span>
+<span id="cb7-20"><a href="#cb7-20"></a>    r0 <span class="op">=</span> [x0; y0]</span>
+<span id="cb7-21"><a href="#cb7-21"></a>    vx0, vy0 <span class="op">=</span> speed0 <span class="op">*</span> [<span class="fu">cos</span>(launchangle); <span class="fu">sin</span>(launchangle)]</span>
+<span id="cb7-22"><a href="#cb7-22"></a>    v0 <span class="op">=</span> [vx0; vy0]</span>
+<span id="cb7-23"><a href="#cb7-23"></a>    u0 <span class="op">=</span> [r0; v0]</span>
+<span id="cb7-24"><a href="#cb7-24"></a></span>
+<span id="cb7-25"><a href="#cb7-25"></a>    t0 <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="cb7-26"><a href="#cb7-26"></a>    tend <span class="op">=</span> <span class="fl">1.0</span></span>
+<span id="cb7-27"><a href="#cb7-27"></a>    tspan <span class="op">=</span> (t0, tend)</span>
+<span id="cb7-28"><a href="#cb7-28"></a>    p <span class="op">=</span> Parameters.<span class="fu">Param</span>(m <span class="op">=</span> <span class="fl">1</span>, g <span class="op">=</span> <span class="fl">1</span>, c <span class="op">=</span> c)</span>
+<span id="cb7-29"><a href="#cb7-29"></a>    prob <span class="op">=</span> <span class="fu">ODEProblem</span>(Physics.ballistic!, u0, tspan, p)</span>
+<span id="cb7-30"><a href="#cb7-30"></a>    <span class="cf">return</span> prob</span>
+<span id="cb7-31"><a href="#cb7-31"></a><span class="kw">end</span></span>
+<span id="cb7-32"><a href="#cb7-32"></a></span>
+<span id="cb7-33"><a href="#cb7-33"></a>speeds <span class="op">=</span> <span class="fu">range</span>(<span class="fl">0</span>, <span class="fl">100</span>)</span>
+<span id="cb7-34"><a href="#cb7-34"></a>problems <span class="op">=</span> <span class="fu">problem_setup</span>.(<span class="fu">Ref</span>(<span class="cn">pi</span><span class="op">/</span><span class="fl">4</span>), speeds, <span class="fu">Ref</span>(<span class="fl">1</span>))</span>
+<span id="cb7-35"><a href="#cb7-35"></a>sols <span class="op">=</span> <span class="fu">solve_till_empty</span>.(problems)</span>
+<span id="cb7-36"><a href="#cb7-36"></a>Visualization.<span class="fu">plot_all_trajectories</span>(sols)</span>
+<span id="cb7-37"><a href="#cb7-37"></a></span>
+<span id="cb7-38"><a href="#cb7-38"></a><span class="co"># ...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>The plot corresponding to this:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -491,36 +498,36 @@ window.Quarto = {
 <h1>Plot speed verses best launch angle, numerically or analyticaly or both</h1>
 <p>I expect 45 degrees to still be consistantly good for launch even with drag.</p>
 <p>Doing this numerically, in file <a href="./Ballistics/src/Ballistics.jl">./Ballistics/src/Benchmarks.jl</a>:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ...</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">best_angle_for_speed</span>(speed0, c)</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    launchangles <span class="op">=</span> <span class="cn">pi</span><span class="op">/</span><span class="fl">4</span> <span class="op">.*</span> ((<span class="fu">range</span>(<span class="op">-</span><span class="fl">1.0</span>, <span class="fl">1.0</span>, <span class="fl">300</span>)) <span class="op">.^</span> <span class="fl">3.0</span> <span class="op">.+</span> <span class="fl">1.0</span>)</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    max_range <span class="op">=</span> <span class="fl">0</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    argmax_theta <span class="op">=</span> <span class="fl">0</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> launchangle <span class="kw">in</span> launchangles</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>        <span class="co"># problem setup</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>        prob <span class="op">=</span> <span class="fu">problem_setup</span>(launchangle, speed0, c)</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>        sol <span class="op">=</span> <span class="fu">solve_till_empty</span>(prob)</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>        cur_range <span class="op">=</span> sol.u[<span class="kw">end</span>][<span class="fl">1</span>]</span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> cur_range <span class="op">&gt;</span> max_range</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>            max_range <span class="op">=</span> cur_range</span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>            argmax_theta <span class="op">=</span> launchangle</span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">end</span></span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    argmax_theta</span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>speeds <span class="op">=</span> <span class="fl">10.0</span> <span class="op">.^</span> <span class="fu">range</span>(<span class="fl">0.0</span>, <span class="fl">3.1</span>, <span class="fl">100</span>)</span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>bestangles <span class="op">=</span> []</span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> speed0 <span class="kw">in</span> speeds</span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>    bestangle <span class="op">=</span> <span class="fu">best_angle_for_speed</span>(speed0, <span class="fl">1</span>)</span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">push!</span>(bestangles, bestangle)</span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>Visualization.<span class="fu">plot_best_angle_for_speeds</span>(speeds, bestangles)</span>
-<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="co"># ...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb8-1"><a href="#cb8-1"></a><span class="co"># ...</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a></span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="kw">function</span> <span class="fu">best_angle_for_speed</span>(speed0, c)</span>
+<span id="cb8-4"><a href="#cb8-4"></a>    launchangles <span class="op">=</span> <span class="cn">pi</span><span class="op">/</span><span class="fl">4</span> <span class="op">.*</span> ((<span class="fu">range</span>(<span class="op">-</span><span class="fl">1.0</span>, <span class="fl">1.0</span>, <span class="fl">300</span>)) <span class="op">.^</span> <span class="fl">3.0</span> <span class="op">.+</span> <span class="fl">1.0</span>)</span>
+<span id="cb8-5"><a href="#cb8-5"></a></span>
+<span id="cb8-6"><a href="#cb8-6"></a>    max_range <span class="op">=</span> <span class="fl">0</span></span>
+<span id="cb8-7"><a href="#cb8-7"></a>    argmax_theta <span class="op">=</span> <span class="fl">0</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a>    <span class="cf">for</span> launchangle <span class="kw">in</span> launchangles</span>
+<span id="cb8-9"><a href="#cb8-9"></a>        <span class="co"># problem setup</span></span>
+<span id="cb8-10"><a href="#cb8-10"></a>        prob <span class="op">=</span> <span class="fu">problem_setup</span>(launchangle, speed0, c)</span>
+<span id="cb8-11"><a href="#cb8-11"></a></span>
+<span id="cb8-12"><a href="#cb8-12"></a>        sol <span class="op">=</span> <span class="fu">solve_till_empty</span>(prob)</span>
+<span id="cb8-13"><a href="#cb8-13"></a>        cur_range <span class="op">=</span> sol.u[<span class="kw">end</span>][<span class="fl">1</span>]</span>
+<span id="cb8-14"><a href="#cb8-14"></a>        <span class="cf">if</span> cur_range <span class="op">&gt;</span> max_range</span>
+<span id="cb8-15"><a href="#cb8-15"></a>            max_range <span class="op">=</span> cur_range</span>
+<span id="cb8-16"><a href="#cb8-16"></a>            argmax_theta <span class="op">=</span> launchangle</span>
+<span id="cb8-17"><a href="#cb8-17"></a>        <span class="cf">end</span></span>
+<span id="cb8-18"><a href="#cb8-18"></a>    <span class="cf">end</span></span>
+<span id="cb8-19"><a href="#cb8-19"></a>    argmax_theta</span>
+<span id="cb8-20"><a href="#cb8-20"></a><span class="kw">end</span></span>
+<span id="cb8-21"><a href="#cb8-21"></a></span>
+<span id="cb8-22"><a href="#cb8-22"></a>speeds <span class="op">=</span> <span class="fl">10.0</span> <span class="op">.^</span> <span class="fu">range</span>(<span class="fl">0.0</span>, <span class="fl">3.1</span>, <span class="fl">100</span>)</span>
+<span id="cb8-23"><a href="#cb8-23"></a>bestangles <span class="op">=</span> []</span>
+<span id="cb8-24"><a href="#cb8-24"></a><span class="cf">for</span> speed0 <span class="kw">in</span> speeds</span>
+<span id="cb8-25"><a href="#cb8-25"></a>    bestangle <span class="op">=</span> <span class="fu">best_angle_for_speed</span>(speed0, <span class="fl">1</span>)</span>
+<span id="cb8-26"><a href="#cb8-26"></a>    <span class="fu">push!</span>(bestangles, bestangle)</span>
+<span id="cb8-27"><a href="#cb8-27"></a><span class="cf">end</span></span>
+<span id="cb8-28"><a href="#cb8-28"></a>Visualization.<span class="fu">plot_best_angle_for_speeds</span>(speeds, bestangles)</span>
+<span id="cb8-29"><a href="#cb8-29"></a></span>
+<span id="cb8-30"><a href="#cb8-30"></a><span class="co"># ...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>The weird choice for launchangles is for concentrating numeric choices for launchangles near <span class="math inline">\(\pi \over 4\)</span>. This produces:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -536,14 +543,14 @@ window.Quarto = {
 </div>
 <p>It seems that my intuition was way off. It seems the best angle quickly becomes closer to zero as the initial velocity increases.</p>
 <p>Let us plot the relation of drag with the best angle for a high velocity (say v = 1200), in file <a href="./Ballistics/src/Ballistics.jl">./Ballistics/src/Ballistics.jl</a>:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>speed0 <span class="op">=</span> <span class="fl">1200.0</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>bestangles <span class="op">=</span> []</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>drags <span class="op">=</span> <span class="fl">2.0</span> <span class="op">.^</span> <span class="fu">range</span>(<span class="fl">1.0</span>, <span class="fl">5.0</span>)</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> c <span class="kw">in</span> drags</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    bestangle <span class="op">=</span> <span class="fu">best_angle_for_speed</span>(speed0, c)</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">push!</span>(bestangles, bestangle)</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>Visualization.<span class="fu">plot_best_angle_vs_drag</span>(drags, bestangles)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb9-1"><a href="#cb9-1"></a>speed0 <span class="op">=</span> <span class="fl">1200.0</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a>bestangles <span class="op">=</span> []</span>
+<span id="cb9-3"><a href="#cb9-3"></a>drags <span class="op">=</span> <span class="fl">2.0</span> <span class="op">.^</span> <span class="fu">range</span>(<span class="fl">1.0</span>, <span class="fl">5.0</span>)</span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="cf">for</span> c <span class="kw">in</span> drags</span>
+<span id="cb9-5"><a href="#cb9-5"></a>    bestangle <span class="op">=</span> <span class="fu">best_angle_for_speed</span>(speed0, c)</span>
+<span id="cb9-6"><a href="#cb9-6"></a>    <span class="fu">push!</span>(bestangles, bestangle)</span>
+<span id="cb9-7"><a href="#cb9-7"></a><span class="cf">end</span></span>
+<span id="cb9-8"><a href="#cb9-8"></a>Visualization.<span class="fu">plot_best_angle_vs_drag</span>(drags, bestangles)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 <div class="no-row-height column-margin column-container"><div class="">
 <p>TODO: There isn’t much change in the eventual best angle for large velocities as drag changes. It does not seem right, but the best angle in such case seems to be some constant close to zero. I will explore this more later. The plot generated by above code is:</p>

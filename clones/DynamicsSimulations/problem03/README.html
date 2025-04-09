@@ -102,6 +102,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/iosevka/index.css">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -238,130 +239,130 @@ e. Using ODE45, solve the equations with various accuracies (use ’reltol’ an
 <section id="a.-write-a-single-file-or-function-write-eulers-method" class="level1 page-columns page-full">
 <h1>a. Write a single file or function write eulers method</h1>
 <p>In file <a href="./ODESolvers/procedural.jl">./ODESolvers/procedural.jl</a>:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/usr/bin/env julia</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> <span class="bu">GLMakie</span>  <span class="co"># for plotting</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> <span class="bu">LinearAlgebra</span>  <span class="co"># for norm</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Type definitions, for readability</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>ODE_Function <span class="op">=</span> <span class="dt">Function</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="dt">Time</span> <span class="op">=</span> <span class="dt">Float64</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>Tspan <span class="op">=</span> <span class="dt">Tuple</span>{<span class="dt">Time</span>,<span class="dt">Time</span>}</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>State <span class="op">=</span> <span class="dt">Vector</span>{<span class="dt">Float64</span>}</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> Param</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    r₁</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    k₁</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    l₁</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    r₂</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    k₂</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    l₂</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    m</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    g</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> Prob</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    ode<span class="op">::</span><span class="dt">ODE_Function</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    u₀<span class="op">::</span><span class="dt">State</span></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    tspan<span class="op">::</span><span class="dt">Tspan</span></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    p<span class="op">::</span><span class="dt">Param</span></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>Solution <span class="op">=</span> <span class="dt">Vector</span>{State}</span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Physics/ODEs describing the system</span></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">two_spring_pendulum</span>(u<span class="op">::</span><span class="dt">State</span>, p<span class="op">::</span><span class="dt">Param</span>, t<span class="op">::</span><span class="dt">Time</span>)</span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    r <span class="op">=</span> u[<span class="fl">1</span><span class="op">:</span><span class="fl">2</span>]</span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>    v <span class="op">=</span> u[<span class="fl">3</span><span class="op">:</span><span class="fl">4</span>]</span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>    r₁ <span class="op">=</span> p.r₁</span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>    k₁ <span class="op">=</span> p.k₁</span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>    l₁ <span class="op">=</span> p.l₁</span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>    r₂ <span class="op">=</span> p.r₂</span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>    k₂ <span class="op">=</span> p.k₂</span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>    l₂ <span class="op">=</span> p.l₂</span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>    m <span class="op">=</span> p.m</span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>    g <span class="op">=</span> p.g</span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>    j <span class="op">=</span> [<span class="fl">0</span>; <span class="fl">1</span>]</span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>    seperation1 <span class="op">=</span> (r <span class="op">-</span> r₁)</span>
-<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>    spring1 <span class="op">=</span> k₁ <span class="op">*</span> (<span class="bu">LinearAlgebra</span>.<span class="fu">norm</span>(seperation1) <span class="op">-</span> l₁) <span class="op">*</span> <span class="op">-</span><span class="bu">LinearAlgebra</span>.<span class="fu">normalize</span>(seperation1)</span>
-<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>    seperation2 <span class="op">=</span> (r <span class="op">-</span> r₂)</span>
-<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>    spring2 <span class="op">=</span> k₂ <span class="op">*</span> (<span class="bu">LinearAlgebra</span>.<span class="fu">norm</span>(seperation2) <span class="op">-</span> l₂) <span class="op">*</span> <span class="op">-</span><span class="bu">LinearAlgebra</span>.<span class="fu">normalize</span>(seperation2)</span>
-<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>    gravity <span class="op">=</span> m <span class="op">*</span> g <span class="op">*</span> <span class="op">-</span>j</span>
-<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>    F <span class="op">=</span> (<span class="fl">1</span> <span class="op">/</span> m) <span class="op">*</span> (spring1 <span class="op">+</span> spring2 <span class="op">+</span> gravity)</span>
-<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>    u_new <span class="op">=</span> [<span class="fl">0.0</span>; <span class="fl">0</span>; <span class="fl">0</span>; <span class="fl">0</span>]</span>
-<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>    u_new[<span class="fl">1</span><span class="op">:</span><span class="fl">2</span>] <span class="op">=</span> v</span>
-<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>    u_new[<span class="fl">3</span><span class="op">:</span><span class="fl">4</span>] <span class="op">=</span> F <span class="op">/</span> m</span>
-<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> u_new</span>
-<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
-<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a><span class="co"># Plotting function</span></span>
-<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">plot_trajectory_makie</span>(sol<span class="op">::</span><span class="dt">Solution</span>, prob<span class="op">::</span><span class="dt">Prob</span>)<span class="op">::</span><span class="dt">GLMakie.Figure</span></span>
-<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Convert solution to matrix form</span></span>
-<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>    sol_matrix <span class="op">=</span> <span class="fu">reduce</span>(hcat, sol)<span class="ch">'</span></span>
-<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create figure</span></span>
-<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>    fig <span class="op">=</span> GLMakie.<span class="fu">Figure</span>()</span>
-<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>    ax <span class="op">=</span> GLMakie.<span class="fu">Axis</span>(fig[<span class="fl">1</span>, <span class="fl">1</span>], aspect<span class="op">=</span>GLMakie.<span class="fu">DataAspect</span>())</span>
-<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Plot trajectory</span></span>
-<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>    GLMakie.<span class="fu">lines!</span>(ax, sol_matrix[<span class="op">:</span>, <span class="fl">1</span>], sol_matrix[<span class="op">:</span>, <span class="fl">2</span>])</span>
-<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Plot reference points</span></span>
-<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>    r₁, r₂ <span class="op">=</span> prob.p.r₁, prob.p.r₂</span>
-<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>    GLMakie.<span class="fu">scatter!</span>(ax, [r₁[<span class="fl">1</span>]], [r₁[<span class="fl">2</span>]], color<span class="op">=:</span>red, markersize<span class="op">=</span><span class="fl">15</span>)</span>
-<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>    GLMakie.<span class="fu">scatter!</span>(ax, [r₂[<span class="fl">1</span>]], [r₂[<span class="fl">2</span>]], color<span class="op">=:</span>blue, markersize<span class="op">=</span><span class="fl">15</span>)</span>
-<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Display the figure</span></span>
-<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> fig</span>
-<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
-<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a><span class="co"># Problem Setup</span></span>
-<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a>(x₀, y₀) <span class="op">=</span> (<span class="fl">0.0</span>, <span class="fl">0.0</span>)</span>
-<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a>r₀ <span class="op">=</span> [x₀; y₀]</span>
-<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a>v₀ <span class="op">=</span> [<span class="fl">1.0</span>, <span class="fl">0.0</span>]</span>
-<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a>u₀ <span class="op">=</span> [r₀; v₀]</span>
-<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a>tspan <span class="op">=</span> (<span class="fl">0.0</span>, <span class="fl">100.0</span>)</span>
-<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a>r₁, k₁, l₁ <span class="op">=</span> [<span class="op">-</span><span class="fl">1.0</span>, <span class="op">-</span><span class="fl">1.0</span>], <span class="fl">1</span>, <span class="fl">1</span></span>
-<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a>r₂, k₂, l₂ <span class="op">=</span> [<span class="fl">1.0</span>, <span class="op">-</span><span class="fl">1.0</span>], <span class="fl">1</span>, <span class="fl">1</span></span>
-<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a>m, g <span class="op">=</span> <span class="fl">1.0</span>, <span class="fl">0.0</span></span>
-<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> <span class="fu">Param</span>(r₁, k₁, l₁, r₂, k₂, l₂, m, g)</span>
-<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-96"><a href="#cb2-96" aria-hidden="true" tabindex="-1"></a>prob <span class="op">=</span> <span class="fu">Prob</span>(two_spring_pendulum, u₀, tspan, p)</span>
-<span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">euler_solve</span>(prob<span class="op">::</span><span class="dt">Prob</span>)<span class="op">::</span><span class="dt">Solution</span></span>
-<span id="cb2-99"><a href="#cb2-99" aria-hidden="true" tabindex="-1"></a>    <span class="co"># unpack variables</span></span>
-<span id="cb2-100"><a href="#cb2-100" aria-hidden="true" tabindex="-1"></a>    my_ode <span class="op">=</span> prob.ode</span>
-<span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a>    u₀ <span class="op">=</span> prob.u₀</span>
-<span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a>    tstart, tend <span class="op">=</span> prob.tspan</span>
-<span id="cb2-103"><a href="#cb2-103" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> prob.p</span>
-<span id="cb2-104"><a href="#cb2-104" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-105"><a href="#cb2-105" aria-hidden="true" tabindex="-1"></a>    sol<span class="op">::</span><span class="dt">Vector{State} </span><span class="op">=</span> [u₀]</span>
-<span id="cb2-106"><a href="#cb2-106" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-107"><a href="#cb2-107" aria-hidden="true" tabindex="-1"></a>    <span class="co"># eulers method</span></span>
-<span id="cb2-108"><a href="#cb2-108" aria-hidden="true" tabindex="-1"></a>    Δh <span class="op">=</span> <span class="fl">0.001</span></span>
-<span id="cb2-109"><a href="#cb2-109" aria-hidden="true" tabindex="-1"></a>    tspan <span class="op">=</span> tstart<span class="op">:</span>Δh<span class="op">:</span>tend</span>
-<span id="cb2-110"><a href="#cb2-110" aria-hidden="true" tabindex="-1"></a>    uₜ <span class="op">=</span> u₀</span>
-<span id="cb2-111"><a href="#cb2-111" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> t <span class="kw">in</span> tspan</span>
-<span id="cb2-112"><a href="#cb2-112" aria-hidden="true" tabindex="-1"></a>        dₜu <span class="op">=</span> <span class="fu">my_ode</span>(uₜ, p, t)</span>
-<span id="cb2-113"><a href="#cb2-113" aria-hidden="true" tabindex="-1"></a>        uₜ <span class="op">=</span> uₜ <span class="op">+</span> Δh <span class="op">*</span> dₜu</span>
-<span id="cb2-114"><a href="#cb2-114" aria-hidden="true" tabindex="-1"></a>        <span class="fu">push!</span>(sol, uₜ)</span>
-<span id="cb2-115"><a href="#cb2-115" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
-<span id="cb2-116"><a href="#cb2-116" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> sol</span>
-<span id="cb2-117"><a href="#cb2-117" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
-<span id="cb2-118"><a href="#cb2-118" aria-hidden="true" tabindex="-1"></a>sol <span class="op">=</span> <span class="fu">euler_solve</span>(prob)</span>
-<span id="cb2-119"><a href="#cb2-119" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-120"><a href="#cb2-120" aria-hidden="true" tabindex="-1"></a>trajectory_plot <span class="op">=</span> <span class="fu">plot_trajectory_makie</span>(sol, prob)</span>
-<span id="cb2-121"><a href="#cb2-121" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-122"><a href="#cb2-122" aria-hidden="true" tabindex="-1"></a>GLMakie.<span class="fu">save</span>(<span class="st">"two_spring_pendulum.png"</span>, trajectory_plot)</span>
-<span id="cb2-123"><a href="#cb2-123" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-124"><a href="#cb2-124" aria-hidden="true" tabindex="-1"></a>GLMakie.<span class="fu">display</span>(trajectory_plot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1"></a><span class="co">#!/usr/bin/env julia</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a></span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="im">import</span> <span class="bu">GLMakie</span>  <span class="co"># for plotting</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="im">import</span> <span class="bu">LinearAlgebra</span>  <span class="co"># for norm</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a></span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="co"># Type definitions, for readability</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a>ODE_Function <span class="op">=</span> <span class="dt">Function</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a><span class="dt">Time</span> <span class="op">=</span> <span class="dt">Float64</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a>Tspan <span class="op">=</span> <span class="dt">Tuple</span>{<span class="dt">Time</span>,<span class="dt">Time</span>}</span>
+<span id="cb2-10"><a href="#cb2-10"></a>State <span class="op">=</span> <span class="dt">Vector</span>{<span class="dt">Float64</span>}</span>
+<span id="cb2-11"><a href="#cb2-11"></a><span class="kw">struct</span> Param</span>
+<span id="cb2-12"><a href="#cb2-12"></a>    r₁</span>
+<span id="cb2-13"><a href="#cb2-13"></a>    k₁</span>
+<span id="cb2-14"><a href="#cb2-14"></a>    l₁</span>
+<span id="cb2-15"><a href="#cb2-15"></a>    r₂</span>
+<span id="cb2-16"><a href="#cb2-16"></a>    k₂</span>
+<span id="cb2-17"><a href="#cb2-17"></a>    l₂</span>
+<span id="cb2-18"><a href="#cb2-18"></a>    m</span>
+<span id="cb2-19"><a href="#cb2-19"></a>    g</span>
+<span id="cb2-20"><a href="#cb2-20"></a><span class="kw">end</span></span>
+<span id="cb2-21"><a href="#cb2-21"></a><span class="kw">struct</span> Prob</span>
+<span id="cb2-22"><a href="#cb2-22"></a>    ode<span class="op">::</span><span class="dt">ODE_Function</span></span>
+<span id="cb2-23"><a href="#cb2-23"></a>    u₀<span class="op">::</span><span class="dt">State</span></span>
+<span id="cb2-24"><a href="#cb2-24"></a>    tspan<span class="op">::</span><span class="dt">Tspan</span></span>
+<span id="cb2-25"><a href="#cb2-25"></a>    p<span class="op">::</span><span class="dt">Param</span></span>
+<span id="cb2-26"><a href="#cb2-26"></a><span class="kw">end</span></span>
+<span id="cb2-27"><a href="#cb2-27"></a>Solution <span class="op">=</span> <span class="dt">Vector</span>{State}</span>
+<span id="cb2-28"><a href="#cb2-28"></a></span>
+<span id="cb2-29"><a href="#cb2-29"></a><span class="co"># Physics/ODEs describing the system</span></span>
+<span id="cb2-30"><a href="#cb2-30"></a><span class="kw">function</span> <span class="fu">two_spring_pendulum</span>(u<span class="op">::</span><span class="dt">State</span>, p<span class="op">::</span><span class="dt">Param</span>, t<span class="op">::</span><span class="dt">Time</span>)</span>
+<span id="cb2-31"><a href="#cb2-31"></a>    r <span class="op">=</span> u[<span class="fl">1</span><span class="op">:</span><span class="fl">2</span>]</span>
+<span id="cb2-32"><a href="#cb2-32"></a>    v <span class="op">=</span> u[<span class="fl">3</span><span class="op">:</span><span class="fl">4</span>]</span>
+<span id="cb2-33"><a href="#cb2-33"></a></span>
+<span id="cb2-34"><a href="#cb2-34"></a>    r₁ <span class="op">=</span> p.r₁</span>
+<span id="cb2-35"><a href="#cb2-35"></a>    k₁ <span class="op">=</span> p.k₁</span>
+<span id="cb2-36"><a href="#cb2-36"></a>    l₁ <span class="op">=</span> p.l₁</span>
+<span id="cb2-37"><a href="#cb2-37"></a>    r₂ <span class="op">=</span> p.r₂</span>
+<span id="cb2-38"><a href="#cb2-38"></a>    k₂ <span class="op">=</span> p.k₂</span>
+<span id="cb2-39"><a href="#cb2-39"></a>    l₂ <span class="op">=</span> p.l₂</span>
+<span id="cb2-40"><a href="#cb2-40"></a></span>
+<span id="cb2-41"><a href="#cb2-41"></a>    m <span class="op">=</span> p.m</span>
+<span id="cb2-42"><a href="#cb2-42"></a>    g <span class="op">=</span> p.g</span>
+<span id="cb2-43"><a href="#cb2-43"></a></span>
+<span id="cb2-44"><a href="#cb2-44"></a>    j <span class="op">=</span> [<span class="fl">0</span>; <span class="fl">1</span>]</span>
+<span id="cb2-45"><a href="#cb2-45"></a></span>
+<span id="cb2-46"><a href="#cb2-46"></a>    seperation1 <span class="op">=</span> (r <span class="op">-</span> r₁)</span>
+<span id="cb2-47"><a href="#cb2-47"></a>    spring1 <span class="op">=</span> k₁ <span class="op">*</span> (<span class="bu">LinearAlgebra</span>.<span class="fu">norm</span>(seperation1) <span class="op">-</span> l₁) <span class="op">*</span> <span class="op">-</span><span class="bu">LinearAlgebra</span>.<span class="fu">normalize</span>(seperation1)</span>
+<span id="cb2-48"><a href="#cb2-48"></a>    seperation2 <span class="op">=</span> (r <span class="op">-</span> r₂)</span>
+<span id="cb2-49"><a href="#cb2-49"></a>    spring2 <span class="op">=</span> k₂ <span class="op">*</span> (<span class="bu">LinearAlgebra</span>.<span class="fu">norm</span>(seperation2) <span class="op">-</span> l₂) <span class="op">*</span> <span class="op">-</span><span class="bu">LinearAlgebra</span>.<span class="fu">normalize</span>(seperation2)</span>
+<span id="cb2-50"><a href="#cb2-50"></a>    gravity <span class="op">=</span> m <span class="op">*</span> g <span class="op">*</span> <span class="op">-</span>j</span>
+<span id="cb2-51"><a href="#cb2-51"></a></span>
+<span id="cb2-52"><a href="#cb2-52"></a>    F <span class="op">=</span> (<span class="fl">1</span> <span class="op">/</span> m) <span class="op">*</span> (spring1 <span class="op">+</span> spring2 <span class="op">+</span> gravity)</span>
+<span id="cb2-53"><a href="#cb2-53"></a></span>
+<span id="cb2-54"><a href="#cb2-54"></a>    u_new <span class="op">=</span> [<span class="fl">0.0</span>; <span class="fl">0</span>; <span class="fl">0</span>; <span class="fl">0</span>]</span>
+<span id="cb2-55"><a href="#cb2-55"></a>    u_new[<span class="fl">1</span><span class="op">:</span><span class="fl">2</span>] <span class="op">=</span> v</span>
+<span id="cb2-56"><a href="#cb2-56"></a>    u_new[<span class="fl">3</span><span class="op">:</span><span class="fl">4</span>] <span class="op">=</span> F <span class="op">/</span> m</span>
+<span id="cb2-57"><a href="#cb2-57"></a></span>
+<span id="cb2-58"><a href="#cb2-58"></a>    <span class="cf">return</span> u_new</span>
+<span id="cb2-59"><a href="#cb2-59"></a><span class="kw">end</span></span>
+<span id="cb2-60"><a href="#cb2-60"></a></span>
+<span id="cb2-61"><a href="#cb2-61"></a></span>
+<span id="cb2-62"><a href="#cb2-62"></a><span class="co"># Plotting function</span></span>
+<span id="cb2-63"><a href="#cb2-63"></a><span class="kw">function</span> <span class="fu">plot_trajectory_makie</span>(sol<span class="op">::</span><span class="dt">Solution</span>, prob<span class="op">::</span><span class="dt">Prob</span>)<span class="op">::</span><span class="dt">GLMakie.Figure</span></span>
+<span id="cb2-64"><a href="#cb2-64"></a>    <span class="co"># Convert solution to matrix form</span></span>
+<span id="cb2-65"><a href="#cb2-65"></a>    sol_matrix <span class="op">=</span> <span class="fu">reduce</span>(hcat, sol)<span class="ch">'</span></span>
+<span id="cb2-66"><a href="#cb2-66"></a></span>
+<span id="cb2-67"><a href="#cb2-67"></a>    <span class="co"># Create figure</span></span>
+<span id="cb2-68"><a href="#cb2-68"></a>    fig <span class="op">=</span> GLMakie.<span class="fu">Figure</span>()</span>
+<span id="cb2-69"><a href="#cb2-69"></a>    ax <span class="op">=</span> GLMakie.<span class="fu">Axis</span>(fig[<span class="fl">1</span>, <span class="fl">1</span>], aspect<span class="op">=</span>GLMakie.<span class="fu">DataAspect</span>())</span>
+<span id="cb2-70"><a href="#cb2-70"></a></span>
+<span id="cb2-71"><a href="#cb2-71"></a>    <span class="co"># Plot trajectory</span></span>
+<span id="cb2-72"><a href="#cb2-72"></a>    GLMakie.<span class="fu">lines!</span>(ax, sol_matrix[<span class="op">:</span>, <span class="fl">1</span>], sol_matrix[<span class="op">:</span>, <span class="fl">2</span>])</span>
+<span id="cb2-73"><a href="#cb2-73"></a></span>
+<span id="cb2-74"><a href="#cb2-74"></a>    <span class="co"># Plot reference points</span></span>
+<span id="cb2-75"><a href="#cb2-75"></a>    r₁, r₂ <span class="op">=</span> prob.p.r₁, prob.p.r₂</span>
+<span id="cb2-76"><a href="#cb2-76"></a>    GLMakie.<span class="fu">scatter!</span>(ax, [r₁[<span class="fl">1</span>]], [r₁[<span class="fl">2</span>]], color<span class="op">=:</span>red, markersize<span class="op">=</span><span class="fl">15</span>)</span>
+<span id="cb2-77"><a href="#cb2-77"></a>    GLMakie.<span class="fu">scatter!</span>(ax, [r₂[<span class="fl">1</span>]], [r₂[<span class="fl">2</span>]], color<span class="op">=:</span>blue, markersize<span class="op">=</span><span class="fl">15</span>)</span>
+<span id="cb2-78"><a href="#cb2-78"></a></span>
+<span id="cb2-79"><a href="#cb2-79"></a>    <span class="co"># Display the figure</span></span>
+<span id="cb2-80"><a href="#cb2-80"></a>    <span class="cf">return</span> fig</span>
+<span id="cb2-81"><a href="#cb2-81"></a><span class="kw">end</span></span>
+<span id="cb2-82"><a href="#cb2-82"></a></span>
+<span id="cb2-83"><a href="#cb2-83"></a><span class="co"># Problem Setup</span></span>
+<span id="cb2-84"><a href="#cb2-84"></a>(x₀, y₀) <span class="op">=</span> (<span class="fl">0.0</span>, <span class="fl">0.0</span>)</span>
+<span id="cb2-85"><a href="#cb2-85"></a>r₀ <span class="op">=</span> [x₀; y₀]</span>
+<span id="cb2-86"><a href="#cb2-86"></a>v₀ <span class="op">=</span> [<span class="fl">1.0</span>, <span class="fl">0.0</span>]</span>
+<span id="cb2-87"><a href="#cb2-87"></a>u₀ <span class="op">=</span> [r₀; v₀]</span>
+<span id="cb2-88"><a href="#cb2-88"></a></span>
+<span id="cb2-89"><a href="#cb2-89"></a>tspan <span class="op">=</span> (<span class="fl">0.0</span>, <span class="fl">100.0</span>)</span>
+<span id="cb2-90"><a href="#cb2-90"></a></span>
+<span id="cb2-91"><a href="#cb2-91"></a>r₁, k₁, l₁ <span class="op">=</span> [<span class="op">-</span><span class="fl">1.0</span>, <span class="op">-</span><span class="fl">1.0</span>], <span class="fl">1</span>, <span class="fl">1</span></span>
+<span id="cb2-92"><a href="#cb2-92"></a>r₂, k₂, l₂ <span class="op">=</span> [<span class="fl">1.0</span>, <span class="op">-</span><span class="fl">1.0</span>], <span class="fl">1</span>, <span class="fl">1</span></span>
+<span id="cb2-93"><a href="#cb2-93"></a>m, g <span class="op">=</span> <span class="fl">1.0</span>, <span class="fl">0.0</span></span>
+<span id="cb2-94"><a href="#cb2-94"></a>p <span class="op">=</span> <span class="fu">Param</span>(r₁, k₁, l₁, r₂, k₂, l₂, m, g)</span>
+<span id="cb2-95"><a href="#cb2-95"></a></span>
+<span id="cb2-96"><a href="#cb2-96"></a>prob <span class="op">=</span> <span class="fu">Prob</span>(two_spring_pendulum, u₀, tspan, p)</span>
+<span id="cb2-97"><a href="#cb2-97"></a></span>
+<span id="cb2-98"><a href="#cb2-98"></a><span class="kw">function</span> <span class="fu">euler_solve</span>(prob<span class="op">::</span><span class="dt">Prob</span>)<span class="op">::</span><span class="dt">Solution</span></span>
+<span id="cb2-99"><a href="#cb2-99"></a>    <span class="co"># unpack variables</span></span>
+<span id="cb2-100"><a href="#cb2-100"></a>    my_ode <span class="op">=</span> prob.ode</span>
+<span id="cb2-101"><a href="#cb2-101"></a>    u₀ <span class="op">=</span> prob.u₀</span>
+<span id="cb2-102"><a href="#cb2-102"></a>    tstart, tend <span class="op">=</span> prob.tspan</span>
+<span id="cb2-103"><a href="#cb2-103"></a>    p <span class="op">=</span> prob.p</span>
+<span id="cb2-104"><a href="#cb2-104"></a></span>
+<span id="cb2-105"><a href="#cb2-105"></a>    sol<span class="op">::</span><span class="dt">Vector{State} </span><span class="op">=</span> [u₀]</span>
+<span id="cb2-106"><a href="#cb2-106"></a></span>
+<span id="cb2-107"><a href="#cb2-107"></a>    <span class="co"># eulers method</span></span>
+<span id="cb2-108"><a href="#cb2-108"></a>    Δh <span class="op">=</span> <span class="fl">0.001</span></span>
+<span id="cb2-109"><a href="#cb2-109"></a>    tspan <span class="op">=</span> tstart<span class="op">:</span>Δh<span class="op">:</span>tend</span>
+<span id="cb2-110"><a href="#cb2-110"></a>    uₜ <span class="op">=</span> u₀</span>
+<span id="cb2-111"><a href="#cb2-111"></a>    <span class="cf">for</span> t <span class="kw">in</span> tspan</span>
+<span id="cb2-112"><a href="#cb2-112"></a>        dₜu <span class="op">=</span> <span class="fu">my_ode</span>(uₜ, p, t)</span>
+<span id="cb2-113"><a href="#cb2-113"></a>        uₜ <span class="op">=</span> uₜ <span class="op">+</span> Δh <span class="op">*</span> dₜu</span>
+<span id="cb2-114"><a href="#cb2-114"></a>        <span class="fu">push!</span>(sol, uₜ)</span>
+<span id="cb2-115"><a href="#cb2-115"></a>    <span class="cf">end</span></span>
+<span id="cb2-116"><a href="#cb2-116"></a>    <span class="cf">return</span> sol</span>
+<span id="cb2-117"><a href="#cb2-117"></a><span class="kw">end</span></span>
+<span id="cb2-118"><a href="#cb2-118"></a>sol <span class="op">=</span> <span class="fu">euler_solve</span>(prob)</span>
+<span id="cb2-119"><a href="#cb2-119"></a></span>
+<span id="cb2-120"><a href="#cb2-120"></a>trajectory_plot <span class="op">=</span> <span class="fu">plot_trajectory_makie</span>(sol, prob)</span>
+<span id="cb2-121"><a href="#cb2-121"></a></span>
+<span id="cb2-122"><a href="#cb2-122"></a>GLMakie.<span class="fu">save</span>(<span class="st">"two_spring_pendulum.png"</span>, trajectory_plot)</span>
+<span id="cb2-123"><a href="#cb2-123"></a></span>
+<span id="cb2-124"><a href="#cb2-124"></a>GLMakie.<span class="fu">display</span>(trajectory_plot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>This generates the following trajectory:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -370,9 +371,9 @@ e. Using ODE45, solve the equations with various accuracies (use ’reltol’ an
 </figure>
 </div>
 <p>For the animation, with some more interesting parameters, produces the following animation:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#...</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>Visualization.<span class="fu">makie_animation</span>(sol)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb3-1"><a href="#cb3-1"></a><span class="co">#...</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>Visualization.<span class="fu">makie_animation</span>(sol)</span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="co">#...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 <div class="no-row-height column-margin column-container"><div class="">
 <p>TODO: TODO of problem 01: visualisation springs</p>
@@ -386,58 +387,58 @@ e. Using ODE45, solve the equations with various accuracies (use ’reltol’ an
 <section id="b.-call-rhs-function-inside-solver" class="level1">
 <h1>b. Call RHS function inside solver</h1>
 <p>I have modularised this very file into modules inside <a href="./ODESolvers/src/ODESolvers.jl">./ODESolvers/src/ODESolvers.jl</a>:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> ODESolvers</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">include</span>(<span class="st">"ProblemTypes.jl"</span>)</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">include</span>(<span class="st">"EulerSolver.jl"</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">include</span>(<span class="st">"Physics.jl"</span>)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">include</span>(<span class="st">"ProblemSetup.jl"</span>)</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">include</span>(<span class="st">"Visualization.jl"</span>)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>prob <span class="op">=</span> ProblemSetup.prob</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>sol <span class="op">=</span> EulerSolver.<span class="fu">euler_solve</span>(prob)</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>Visualization.<span class="fu">plot_trajectory_makie</span>(sol, prob)</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span> <span class="co"># module ODESolvers</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">module</span> ODESolvers</span>
+<span id="cb4-2"><a href="#cb4-2"></a></span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="fu">include</span>(<span class="st">"ProblemTypes.jl"</span>)</span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="fu">include</span>(<span class="st">"EulerSolver.jl"</span>)</span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="fu">include</span>(<span class="st">"Physics.jl"</span>)</span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="fu">include</span>(<span class="st">"ProblemSetup.jl"</span>)</span>
+<span id="cb4-7"><a href="#cb4-7"></a><span class="fu">include</span>(<span class="st">"Visualization.jl"</span>)</span>
+<span id="cb4-8"><a href="#cb4-8"></a></span>
+<span id="cb4-9"><a href="#cb4-9"></a>prob <span class="op">=</span> ProblemSetup.prob</span>
+<span id="cb4-10"><a href="#cb4-10"></a>sol <span class="op">=</span> EulerSolver.<span class="fu">euler_solve</span>(prob)</span>
+<span id="cb4-11"><a href="#cb4-11"></a></span>
+<span id="cb4-12"><a href="#cb4-12"></a>Visualization.<span class="fu">plot_trajectory_makie</span>(sol, prob)</span>
+<span id="cb4-13"><a href="#cb4-13"></a></span>
+<span id="cb4-14"><a href="#cb4-14"></a><span class="kw">end</span> <span class="co"># module ODESolvers</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="c.-use-ode45-equivalent" class="level1">
 <h1>c.&nbsp;Use ODE45 equivalent</h1>
 <p>I use Julia package <code>DifferentialEquations</code> in file <a href="./ODESolvers/src/ODESolvers.jl">./ODESolvers/src/ODESolvers.jl</a>:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> ODESolvers</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">include</span>(<span class="st">"ProblemTypes.jl"</span>)</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">include</span>(<span class="st">"EulerSolver.jl"</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">include</span>(<span class="st">"Physics.jl"</span>)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">include</span>(<span class="st">"ProblemSetup.jl"</span>)</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">include</span>(<span class="st">"Visualization.jl"</span>)</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> <span class="bu">DifferentialEquations</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>Δh<span class="op">::</span><span class="dt">Float64 </span><span class="op">=</span> <span class="fl">0.001</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>prob <span class="op">=</span> ProblemSetup.prob</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">#sol_euler = EulerSolver.euler_solve(prob, Δh)</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualization.plot_trajectory_makie(sol_euler, prob)</span></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>prob_ode45 <span class="op">=</span> DifferentialEquations.<span class="fu">ODEProblem</span>(prob.ode, prob.u₀, prob.tspan, prob.p)</span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>sol_ode45 <span class="op">=</span> DifferentialEquations.<span class="fu">solve</span>(prob_ode45, saveat<span class="op">=</span>Δh)</span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>Visualization.<span class="fu">plot_trajectory_makie</span>(sol_ode45.u, prob)</span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span> <span class="co"># module ODESolvers</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">module</span> ODESolvers</span>
+<span id="cb5-2"><a href="#cb5-2"></a></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="fu">include</span>(<span class="st">"ProblemTypes.jl"</span>)</span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="fu">include</span>(<span class="st">"EulerSolver.jl"</span>)</span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="fu">include</span>(<span class="st">"Physics.jl"</span>)</span>
+<span id="cb5-6"><a href="#cb5-6"></a><span class="fu">include</span>(<span class="st">"ProblemSetup.jl"</span>)</span>
+<span id="cb5-7"><a href="#cb5-7"></a><span class="fu">include</span>(<span class="st">"Visualization.jl"</span>)</span>
+<span id="cb5-8"><a href="#cb5-8"></a></span>
+<span id="cb5-9"><a href="#cb5-9"></a><span class="im">import</span> <span class="bu">DifferentialEquations</span></span>
+<span id="cb5-10"><a href="#cb5-10"></a></span>
+<span id="cb5-11"><a href="#cb5-11"></a>Δh<span class="op">::</span><span class="dt">Float64 </span><span class="op">=</span> <span class="fl">0.001</span></span>
+<span id="cb5-12"><a href="#cb5-12"></a></span>
+<span id="cb5-13"><a href="#cb5-13"></a>prob <span class="op">=</span> ProblemSetup.prob</span>
+<span id="cb5-14"><a href="#cb5-14"></a><span class="co">#sol_euler = EulerSolver.euler_solve(prob, Δh)</span></span>
+<span id="cb5-15"><a href="#cb5-15"></a></span>
+<span id="cb5-16"><a href="#cb5-16"></a><span class="co"># Visualization.plot_trajectory_makie(sol_euler, prob)</span></span>
+<span id="cb5-17"><a href="#cb5-17"></a></span>
+<span id="cb5-18"><a href="#cb5-18"></a>prob_ode45 <span class="op">=</span> DifferentialEquations.<span class="fu">ODEProblem</span>(prob.ode, prob.u₀, prob.tspan, prob.p)</span>
+<span id="cb5-19"><a href="#cb5-19"></a>sol_ode45 <span class="op">=</span> DifferentialEquations.<span class="fu">solve</span>(prob_ode45, saveat<span class="op">=</span>Δh)</span>
+<span id="cb5-20"><a href="#cb5-20"></a></span>
+<span id="cb5-21"><a href="#cb5-21"></a>Visualization.<span class="fu">plot_trajectory_makie</span>(sol_ode45.u, prob)</span>
+<span id="cb5-22"><a href="#cb5-22"></a></span>
+<span id="cb5-23"><a href="#cb5-23"></a><span class="kw">end</span> <span class="co"># module ODESolvers</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="d.-progressively-change-delta-h-and-compare-solutions" class="level1">
+<section id="d.-progressively-change-delta-h-and-compare-solutions" class="level1 page-columns page-full">
 <h1>d.&nbsp;Progressively change <span class="math inline">\(\Delta h\)</span> and compare solutions</h1>
 <p>To compare methods, and so there solutions on progressively reducing step sizes, one idea I could come up with is comparing the ‘Slither’(something which I name later) characteristic.</p>
 <p>I am taking the euclidean-norm of the difference of state vectors at equivalent timesteps (with linear interpolation), summing up all of these scalar deltas in a single metric, lets call this difference between two solutions the ‘slither’. The basic idea is that on progressively reducing the step size, we expect the slither to progressively change, and since we expect there to be a perfect solution that we are targetting so specifically we expect the slither to progressively reduce.</p>
 <p>The rate of change of (roco) Slither with respect(wr) to the step size is what is of interest to us when comparing two different methods. Afterall, if on progressively reducing the step size, the slither goes very quickly to zero, then either the solution that the method converges to has some bias, or the solution that the method converges to is accurate, i.e either the method in question is precise or the method is accurate respectively. And we note here on Andy sir’s word and his girlfriend’s story that “every method converges very quickly, except euler’s method”. So we measure the ‘roco’ slither ‘wr’ step.</p>
 <p>It is interesting to note that there are many other methods to compare two solutions, one other I can think of is instead of tracking and characterising the Slither decay, I instead just take the euclidean norm of end state vector. Since I expect this to be much easier to implement in code, let’s call this difference the ‘TailMatch’. I will start with this.</p>
-<section id="tailmatch-characterisation" class="level2">
+<section id="tailmatch-characterisation" class="level2 page-columns page-full">
 <h2 class="anchored" data-anchor-id="tailmatch-characterisation">TailMatch Characterisation</h2>
 <p>The ‘tailmatch’ is quite easily implemented in code, in file <a href="./ODESolvers/src/Benchmarks.jl">./ODESolvers/src/Benchmarks.jl</a>:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tail_match</span>(sol1<span class="op">::</span><span class="dt">ProblemTypes.Solution</span>, sol2<span class="op">::</span><span class="dt">ProblemTypes.Solution</span>)<span class="op">::</span><span class="dt">ProblemTypes.AbsError </span><span class="op">=</span> <span class="fu">norm</span>(sol2[<span class="kw">end</span>] <span class="op">-</span> sol1[<span class="kw">end</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a href="#cb6-1"></a><span class="fu">tail_match</span>(sol1<span class="op">::</span><span class="dt">ProblemTypes.Solution</span>, sol2<span class="op">::</span><span class="dt">ProblemTypes.Solution</span>)<span class="op">::</span><span class="dt">ProblemTypes.AbsError </span><span class="op">=</span> <span class="fu">norm</span>(sol2[<span class="kw">end</span>] <span class="op">-</span> sol1[<span class="kw">end</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Since my current implementation saves updated state at each step, benchmarking for progressively reducing step sizes takes a lot of memory on top of time. I will update the euler solver to not save at each time step, benchmark at smaller step sizes later. For now, for the step size, I have gone till 1e-6 and the plot for the benchmark, with <code>tail_match</code> is as follows:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -445,8 +446,10 @@ e. Using ODE45, solve the equations with various accuracies (use ’reltol’ an
 <figcaption>Step sizes vs AbsError</figcaption>
 </figure>
 </div>
+
+<div class="no-row-height column-margin column-container"><div class="">
 <p>TODO: fix memory issue and go till 1e-15</p>
-<p>I have done some deep (very small) comparision of <code>Midpoint</code> and <code>RK4</code> in <a href="./problem09/README.md">./problem09/README.md</a></p>
+</div></div><p>I have done some deep (very small) comparision of <code>Midpoint</code> and <code>RK4</code> in <a href="./problem09/README.md">./problem09/README.md</a></p>
 </section>
 <section id="slither-charaterisation" class="level2">
 <h2 class="anchored" data-anchor-id="slither-charaterisation">Slither Charaterisation</h2>

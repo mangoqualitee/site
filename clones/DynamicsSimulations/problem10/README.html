@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Vishal Paudel">
+<meta name="dcterms.date" content="2025-03-25">
 
-<title>vishal’s sight</title>
+<title>problem10 – vishal’s sight</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,25 +22,59 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-6c21014d9765ba549c6ebad95917e4d7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-87d39b9aa9bdc40035d7ff151ba5a458.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-6c21014d9765ba549c6ebad95917e4d7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-87d39b9aa9bdc40035d7ff151ba5a458.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -69,7 +105,7 @@ ul.task-list li input[type="checkbox"] {
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/iosevka/index.css">
 
 
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../../../styles.css">
 </head>
 
 <body class="nav-fixed">
@@ -79,7 +115,7 @@ ul.task-list li input[type="checkbox"] {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../../index.html">
     <span class="navbar-title">vishal’s sight</span>
     </a>
   </div>
@@ -90,15 +126,15 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="../../../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
+    <a class="nav-link" href="../../../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./clones/DynamicsSimulations/README.html"> 
+    <a class="nav-link" href="../../../clones/DynamicsSimulations/README.html"> 
 <span class="menu-text">Dynamics</span></a>
   </li>  
 </ul>
@@ -112,22 +148,42 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#a.-plot-2d-projection-of-3d-trajectories" id="toc-a.-plot-2d-projection-of-3d-trajectories" class="nav-link active" data-scroll-target="#a.-plot-2d-projection-of-3d-trajectories">a. Plot 2D projection of 3D trajectories</a></li>
+  <li><a href="#b.-play-around-with-initial-conditions-and-find-the-most-wild-motions" id="toc-b.-play-around-with-initial-conditions-and-find-the-most-wild-motions" class="nav-link" data-scroll-target="#b.-play-around-with-initial-conditions-and-find-the-most-wild-motions">b. Play around with initial conditions, and find the most wild motions</a></li>
+  <li><a href="#c.-analytically-justify-answer-to-part-b" id="toc-c.-analytically-justify-answer-to-part-b" class="nav-link" data-scroll-target="#c.-analytically-justify-answer-to-part-b">c.&nbsp;Analytically justify answer to part (b)</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">vishal’s sight</h1>
+<h1 class="title">problem10</h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Vishal Paudel </p>
+          </div>
+  </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 25, 2025</p>
+    </div>
+  </div>
   
     
   </div>
@@ -137,10 +193,74 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>This is a Quarto website.</p>
-<p>To learn more about Quarto websites visit <a href="https://quarto.org/docs/websites" class="uri">https://quarto.org/docs/websites</a>.</p>
+<blockquote class="blockquote">
+<p>10. Mass hanging from spring. 3D. Consider a point mass hanging from a zero-restlength linear spring (`0 = 0) in a constant gravitational field.</p>
+<pre><code>a) Set up equations. Set up for numerical solution. Plot 2D projection of 3D trajectories.
+b) By playing around with initial conditions, find the most wild motion you can find (wild means most wiggles, or most complicated). Make one or more revealing plots. [Hint: Make sure the features you observe are properties of the system and not due to numerical errors. That is, check that the features do not change when the numerics is refined.]
+c) Using analytical methods justify your answer to part (b).</code></pre>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../media/problem10/problem10.png" class="img-fluid figure-img"></p>
+<figcaption>../media/problem10/problem10.png</figcaption>
+</figure>
+</div>
+</blockquote>
+<section id="a.-plot-2d-projection-of-3d-trajectories" class="level1">
+<h1>a. Plot 2D projection of 3D trajectories</h1>
+<p>In file <a href="./SpringPendulum3D/src/Physics.jl">./SpringPendulum3D/src/Physics.jl</a></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">function</span> <span class="fu">spring_pendulum3d!</span>(du, u, p<span class="op">::</span><span class="dt">Parameters.Param</span>, t)</span>
+<span id="cb2-2"><a href="#cb2-2"></a>    <span class="pp">@unpack</span> mass, gravity, stiffness, restinglen<span class="co">#=, viscosity=#</span> <span class="op">=</span> p</span>
+<span id="cb2-3"><a href="#cb2-3"></a></span>
+<span id="cb2-4"><a href="#cb2-4"></a>    r⃗ <span class="op">=</span> u[<span class="fl">1</span><span class="op">:</span><span class="fl">3</span>]</span>
+<span id="cb2-5"><a href="#cb2-5"></a>    v⃗ <span class="op">=</span> u[<span class="fl">4</span><span class="op">:</span><span class="fl">6</span>]</span>
+<span id="cb2-6"><a href="#cb2-6"></a></span>
+<span id="cb2-7"><a href="#cb2-7"></a>    k <span class="op">=</span> [<span class="fl">0.0</span>; <span class="fl">0.0</span>; <span class="fl">1.0</span>]</span>
+<span id="cb2-8"><a href="#cb2-8"></a>    gravity <span class="op">=</span> mass <span class="op">*</span> gravity <span class="op">*</span> (<span class="op">-</span>k)</span>
+<span id="cb2-9"><a href="#cb2-9"></a>    spring <span class="op">=</span> stiffness <span class="op">*</span> (<span class="fu">norm</span>(r⃗) <span class="op">-</span> restinglen) <span class="op">*</span> (<span class="fu">-normalize</span>(r⃗))</span>
+<span id="cb2-10"><a href="#cb2-10"></a>    <span class="co"># drag = -viscosity * v⃗</span></span>
+<span id="cb2-11"><a href="#cb2-11"></a></span>
+<span id="cb2-12"><a href="#cb2-12"></a>    force <span class="op">=</span> (spring <span class="co">#=+ drag =#</span><span class="op">+</span> gravity)</span>
+<span id="cb2-13"><a href="#cb2-13"></a></span>
+<span id="cb2-14"><a href="#cb2-14"></a>    du[<span class="fl">1</span><span class="op">:</span><span class="fl">3</span>] <span class="op">=</span> v⃗</span>
+<span id="cb2-15"><a href="#cb2-15"></a>    du[<span class="fl">4</span><span class="op">:</span><span class="fl">6</span>] <span class="op">=</span> force <span class="op">/</span> mass</span>
+<span id="cb2-16"><a href="#cb2-16"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The 3D trajectories look like ellipses. For a particular set of parameters, given in the following</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../media/problem10/trajectory_plot.png" class="img-fluid figure-img"></p>
+<figcaption>../media/problem10/trajectory_plot.png</figcaption>
+</figure>
+</div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># ...</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a></span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="co"># problem setup</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>x₀, y₀, z₀ <span class="op">=</span> (<span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>)</span>
+<span id="cb3-5"><a href="#cb3-5"></a>r₀ <span class="op">=</span> [x₀; y₀; z₀]</span>
+<span id="cb3-6"><a href="#cb3-6"></a>v₀ <span class="op">=</span> [<span class="fl">0.0</span>; <span class="fl">1.0</span>; <span class="fl">0.0</span>]</span>
+<span id="cb3-7"><a href="#cb3-7"></a>u₀ <span class="op">=</span> [r₀; v₀]</span>
+<span id="cb3-8"><a href="#cb3-8"></a>tspan <span class="op">=</span> (<span class="fl">0.0</span>, <span class="fl">10.0</span>)</span>
+<span id="cb3-9"><a href="#cb3-9"></a>p <span class="op">=</span> Parameters.<span class="fu">Param</span>(m <span class="op">=</span> <span class="fl">1</span>, g <span class="op">=</span> <span class="fl">1</span>, k <span class="op">=</span> <span class="fl">2</span>, l₀ <span class="op">=</span> <span class="fl">0</span>)</span>
+<span id="cb3-10"><a href="#cb3-10"></a>prob <span class="op">=</span> <span class="fu">ODEProblem</span>(Physics.spring_pendulum3d!, u₀, tspan, p)</span>
+<span id="cb3-11"><a href="#cb3-11"></a></span>
+<span id="cb3-12"><a href="#cb3-12"></a><span class="co"># ...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The 2D projection onto the xy, yz, zx respectively, are as follows:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../media/problem10/trajectory_plot_projection.png" class="img-fluid figure-img"></p>
+<figcaption>../media/problem10/trajectory_plot_projection.png</figcaption>
+</figure>
+</div>
+</section>
+<section id="b.-play-around-with-initial-conditions-and-find-the-most-wild-motions" class="level1">
+<h1>b. Play around with initial conditions, and find the most wild motions</h1>
+<p>I was not able to find any wild motions, other than numerical errors.</p>
+</section>
+<section id="c.-analytically-justify-answer-to-part-b" class="level1">
+<h1>c.&nbsp;Analytically justify answer to part (b)</h1>
+<p>If we look at the differential equations, it is equivalent to having three independent springs in the three mutually orthogonal directions with a constant shift in the ‘z-spring’ due to gravity.</p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

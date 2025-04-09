@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Vishal Paudel">
+<meta name="dcterms.date" content="2025-04-02">
 
-<title>vishal’s sight</title>
+<title>problem11 – vishal’s sight</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,25 +22,59 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-6c21014d9765ba549c6ebad95917e4d7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-87d39b9aa9bdc40035d7ff151ba5a458.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-6c21014d9765ba549c6ebad95917e4d7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-87d39b9aa9bdc40035d7ff151ba5a458.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -68,8 +104,37 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/iosevka/index.css">
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
-<link rel="stylesheet" href="styles.css">
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../../styles.css">
 </head>
 
 <body class="nav-fixed">
@@ -79,7 +144,7 @@ ul.task-list li input[type="checkbox"] {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../../index.html">
     <span class="navbar-title">vishal’s sight</span>
     </a>
   </div>
@@ -90,15 +155,15 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="../../../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
+    <a class="nav-link" href="../../../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./clones/DynamicsSimulations/README.html"> 
+    <a class="nav-link" href="../../../clones/DynamicsSimulations/README.html"> 
 <span class="menu-text">Dynamics</span></a>
   </li>  
 </ul>
@@ -112,22 +177,41 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#a-find-a-central-force-law-fr-so-that-comparing-circular-orbits-of-varying-radii-the-speed-v-is-independent-of-radius." id="toc-a-find-a-central-force-law-fr-so-that-comparing-circular-orbits-of-varying-radii-the-speed-v-is-independent-of-radius." class="nav-link active" data-scroll-target="#a-find-a-central-force-law-fr-so-that-comparing-circular-orbits-of-varying-radii-the-speed-v-is-independent-of-radius.">(a) Find a central force law <span class="math inline">\(F(r)\)</span> so that, comparing circular orbits of varying radii, the speed v is independent of radius.</a></li>
+  <li><a href="#b-by-numerical-experiments-and-trial-and-error-try-to-find-a-periodic-motion-that-is-neither-circular-nor-a-straight-line-for-some-central-force-besides-f-kr-or-f-fracgmmr2-.-a-not-with-a-linear-zero-rest-length-spring-b-not-with-inverse-square-gravity-c-not-circular-motion-and-d-not-straight-line-motion." id="toc-b-by-numerical-experiments-and-trial-and-error-try-to-find-a-periodic-motion-that-is-neither-circular-nor-a-straight-line-for-some-central-force-besides-f-kr-or-f-fracgmmr2-.-a-not-with-a-linear-zero-rest-length-spring-b-not-with-inverse-square-gravity-c-not-circular-motion-and-d-not-straight-line-motion." class="nav-link" data-scroll-target="#b-by-numerical-experiments-and-trial-and-error-try-to-find-a-periodic-motion-that-is-neither-circular-nor-a-straight-line-for-some-central-force-besides-f-kr-or-f-fracgmmr2-.-a-not-with-a-linear-zero-rest-length-spring-b-not-with-inverse-square-gravity-c-not-circular-motion-and-d-not-straight-line-motion.">(b) By numerical experiments, and trial and error, try to find a periodic motion that is neither circular nor a straight line, for some central force besides <span class="math inline">\(F = −kr\)</span> or <span class="math inline">\(F = \frac{−GmM}{r2}\)</span> . a) not with a linear zero-rest length spring; b) not with inverse-square gravity; c) not circular motion; and d) not straight-line motion.</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content page-columns page-full" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">vishal’s sight</h1>
+<h1 class="title">problem11</h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Vishal Paudel </p>
+          </div>
+  </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">April 2, 2025</p>
+    </div>
+  </div>
   
     
   </div>
@@ -137,10 +221,65 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>This is a Quarto website.</p>
-<p>To learn more about Quarto websites visit <a href="https://quarto.org/docs/websites" class="uri">https://quarto.org/docs/websites</a>.</p>
+<blockquote class="blockquote">
+<p>11. <strong>Central force.</strong> These two problems are both about central forces. In both cases the only force is central (directed on the particle towards the origin) and only depends on radius: <span class="math inline">\(\vec{\mathbf{F}} = −F(r)\mathbf{\hat{e}_r}\)</span>. The problems are independent, one does not follow from the other.</p>
+<ol type="a">
+<li>Find a central force law <span class="math inline">\(F(r)\)</span> so that, comparing circular orbits of varying radii, the speed v is independent of radius.</li>
+<li>By numerical experiments, and trial and error, try to find a periodic motion that is neither circular nor a straight line, for some central force besides <span class="math inline">\(F = −kr\)</span> or <span class="math inline">\(F = \frac{−GmM}{r2}\)</span> . a) not with a linear zero-rest length spring; b) not with inverse-square gravity; c) not circular motion; and d) not straight-line motion.
+<ol type="i">
+<li>In your failed searches, before you find a periodic motion, do the motions always have regular patterns or are they sometimes chaotic looking (include some pretty pictures)?</li>
+<li>Puzzle: If you use a power law, what is the minimum number loops in one complete periodic orbit (a loop is, say, a relative maximum in the radius)? How does this depend on the exponent in the power law? You probably cannot make progress with this analytically, but you can figure it out with numerical experiments</li>
+</ol></li>
+</ol>
+<p>[Matlab hint: To do this properly you probably need to guess at a radial force law (most anything will work) and do numerical root finding (e.g., <code>FSOLVE</code>) to find initial conditions and the period of the orbit. Once you have your system you can define a function whose input is the initial conditions and the time of integration and whose output is the difference between the initial state and the final state. You can make this system ‘square’ by assuming that the particle is on the x axis in the initial state. You want to find that input which makes the output the zero vector. Pick a central force and search over initial conditions and durations. Do not use <code>FSOLVE</code> to search over force laws; do your orbit finding using a given force law]</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../media/problem11/problem11.png" class="img-fluid figure-img"></p>
+<figcaption>../media/problem11/problem11.png</figcaption>
+</figure>
+</div>
+</blockquote>
+<section id="a-find-a-central-force-law-fr-so-that-comparing-circular-orbits-of-varying-radii-the-speed-v-is-independent-of-radius." class="level1 page-columns page-full">
+<h1>(a) Find a central force law <span class="math inline">\(F(r)\)</span> so that, comparing circular orbits of varying radii, the speed v is independent of radius.</h1>
+<p>Consider the relationship between centripetal force and velocity for uniform circular motion, since velocity is constant we can write:</p>
+<p><span class="math display">\[F(r) = \frac{mv^2}{r}\]</span></p>
+<p><span class="math display">\[F(r) = k\frac{m}{r}\]</span></p>
+<p>Quickly drawing the trajectory for tangential initial conditions, in file <a href="./CentralForce/src/CentralForce.jl">./CentralForce/src/CentralForce.jl</a>:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a href="#cb1-1"></a>u0 <span class="op">=</span> [<span class="fl">1.0</span>;<span class="fl">0.0</span>;<span class="fl">0.0</span>;<span class="fl">1.0</span>]</span>
+<span id="cb1-2"><a href="#cb1-2"></a>tspan <span class="op">=</span> (<span class="fl">0.0</span>,<span class="fl">10.0</span>)</span>
+<span id="cb1-3"><a href="#cb1-3"></a>m <span class="op">=</span> <span class="fl">1.0</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a>k <span class="op">=</span> <span class="fl">1.0</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a>p <span class="op">=</span> <span class="fu">Param</span>(m, k)</span>
+<span id="cb1-6"><a href="#cb1-6"></a>ode <span class="op">=</span> Physics.speedindependentofradius!</span>
+<span id="cb1-7"><a href="#cb1-7"></a>ode_prob <span class="op">=</span> DifferentialEquations.<span class="fu">ODEProblem</span>(ode, u0, tspan, p)</span>
+<span id="cb1-8"><a href="#cb1-8"></a>sol <span class="op">=</span> DifferentialEquations.<span class="fu">solve</span>(ode_prob)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This produces:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../media/problem11/problem11_trajectory_central_force.png" class="img-fluid figure-img"></p>
+<figcaption>../media/problem11/problem11_trajectory_central_force.png</figcaption>
+</figure>
+</div>
+<p>the trajectory for non-tangential inital velocity:</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>TODO: add graph for velocity vs radius</p>
+</div></div></section>
+<section id="b-by-numerical-experiments-and-trial-and-error-try-to-find-a-periodic-motion-that-is-neither-circular-nor-a-straight-line-for-some-central-force-besides-f-kr-or-f-fracgmmr2-.-a-not-with-a-linear-zero-rest-length-spring-b-not-with-inverse-square-gravity-c-not-circular-motion-and-d-not-straight-line-motion." class="level1">
+<h1>(b) By numerical experiments, and trial and error, try to find a periodic motion that is neither circular nor a straight line, for some central force besides <span class="math inline">\(F = −kr\)</span> or <span class="math inline">\(F = \frac{−GmM}{r2}\)</span> . a) not with a linear zero-rest length spring; b) not with inverse-square gravity; c) not circular motion; and d) not straight-line motion.</h1>
+<p>To do this in julia, I use the very nice notation of <code>NamedTuple</code>s (to skip unpacking):</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">function</span> <span class="fu">f</span>((; u⃗₀, t), p)</span>
+<span id="cb2-2"><a href="#cb2-2"></a>    dynamics_prob <span class="op">=</span> ProblemSetup.<span class="fu">create_problem</span>(u⃗₀, t, p)</span>
+<span id="cb2-3"><a href="#cb2-3"></a>    u⃗ₜ <span class="op">=</span> DifferentialEquations.<span class="fu">solve</span>(dynamics_prob)</span>
+<span id="cb2-4"><a href="#cb2-4"></a>    Δu⃗ <span class="op">=</span> u⃗ₜ <span class="op">-</span> u⃗₀</span>
+<span id="cb2-5"><a href="#cb2-5"></a>    Δu⃗</span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="kw">end</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a></span>
+<span id="cb2-8"><a href="#cb2-8"></a>z⃗₀ <span class="op">=</span> (u⃗₀<span class="op">=</span>[<span class="fl">1.0</span>;<span class="fl">1.0</span>;<span class="fl">1.0</span>;<span class="fl">1.0</span>], t<span class="op">=</span><span class="fl">1.0</span>)</span>
+<span id="cb2-9"><a href="#cb2-9"></a>root_finding_prob <span class="op">=</span> NonlinearSolve.<span class="fu">NonlinearProblem</span>(f, z⃗₀, p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
