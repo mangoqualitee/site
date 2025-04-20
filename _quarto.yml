@@ -9,6 +9,8 @@ project:
 website:
   title: "gyan's sight"
   favicon: images/favicon_lncumn.ico
+  site-url: https://haxfn.github.io/meta-site/
+
   navbar:
     toggle-position: right
     # pinned: true
@@ -21,17 +23,21 @@ website:
       - content/DynamicsSimulations/index.qmd
       - content/Resources/index.qmd
       - content/Blog/index.qmd
+    right:
+      - href: content/Blog/index.xml
+        icon: rss
+
   sidebar:
     - id: dynamics
       search: true
-      contents: DynamicsSimulations
+      contents: content/DynamicsSimulations
       alignment: left
 
 format:
   html:
     theme:
       light: cosmo
-      dark: darkly
+      dark: solar
     css: styles.css
     toc: true
 
