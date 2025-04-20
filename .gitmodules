@@ -1,3 +1,9 @@
-[submodule "clones/DynamicsSimulations"]
-	path = clones/DynamicsSimulations
+[submodule "content/DynamicsSimulations"]
+	path = content/DynamicsSimulations
 	url = git@github-vishalpaudel:gyanantaran/DynamicsSimulations
+[submodule "content/Blog"]
+	path = content/Blog
+	url = git@github-vishalpaudel:mangoqualitee/Blog
+[submodule "content/Resources"]
+	path = content/Resources
+	url = git@github-vishalpaudel:mangoqualitee/Resources

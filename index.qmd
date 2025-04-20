@@ -1,7 +1,14 @@
 ---
-title: "vishal's sight"
+title: "gyan's sight"
+title-block-banner: url("https://res.cloudinary.com/lesswrong-2-0/image/upload/f_auto,q_auto/v1/mirroredImages/Significantly%20Enhancing%20Adult%20Intelligence%20With%20Gene%20Editing%20May%20Be%20Possible_A_scientific_illustration_of_a_g_0.3046069717280864/tpukdzzoaqtq0fpqn3ol")
 ---
 
-This is a Quarto website.
+::: {.callout-note}
+## This is Gyan's [PKM]() site.
+:::
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+::: {.callout-caution collapse="true"}
+## Expand To Learn About Gyan
+
+Gyan (gyanantaran), is a creator therefore a learner. Read more [about this site](about.qmd).
+:::

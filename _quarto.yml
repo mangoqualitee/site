@@ -5,45 +5,52 @@ project:
     browser: false
   render:
     - "*.qmd"
-    - "clones/DynamicsSimulations/README.md"
-    - "clones/DynamicsSimulations/problem01/README.md"
-    - "clones/DynamicsSimulations/problem02/README.md"
-    - "clones/DynamicsSimulations/problem03/README.md"
-    - "clones/DynamicsSimulations/problem04/README.md"
-    - "clones/DynamicsSimulations/problem05/README.md"
-    - "clones/DynamicsSimulations/problem06/README.md"
-    - "clones/DynamicsSimulations/problem07/README.md"
-    - "clones/DynamicsSimulations/problem08/README.md"
-    - "clones/DynamicsSimulations/problem09/README.md"
-    - "clones/DynamicsSimulations/problem10/README.md"
-    - "clones/DynamicsSimulations/problem11/README.md"
-    - "clones/DynamicsSimulations/problem12/README.md"
-    - "clones/DynamicsSimulations/problem13/README.md"
-    - "clones/DynamicsSimulations/problem14/README.md"
-    - "clones/DynamicsSimulations/problem15/README.md"
 
 website:
-  title: "vishal's sight"
+  title: "gyan's sight"
+  favicon: images/favicon_lncumn.ico
   navbar:
+    toggle-position: right
+    # pinned: true
+    collapse-below: xxl
     left:
       - href: index.qmd
         text: Home
       - about.qmd
-      - href: clones/DynamicsSimulations/README.md
-        text: Dynamics
+
+      - content/DynamicsSimulations/index.qmd
+      - content/Resources/index.qmd
+      - content/Blog/index.qmd
+  sidebar:
+    - id: dynamics
+      search: true
+      contents: DynamicsSimulations
+      alignment: left
 
 format:
   html:
     theme:
-      - cosmo
-      - brand
-      # - sketchy
-      # - pandoc
-      # - litera
+      light: cosmo
+      dark: darkly
     css: styles.css
     toc: true
 
     header-includes: |
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/iosevka/index.css">
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          const maxScroll = 300;
+
+          const updateOverlayOpacity = () => {
+            const scrollY = Math.min(window.scrollY, maxScroll);
+            const opacity = (scrollY / maxScroll).toFixed(2);
+            document.documentElement.style.setProperty('--overlay-opacity', opacity);
+          };
+
+          updateOverlayOpacity();
+          window.addEventListener('scroll', updateOverlayOpacity, { passive: true });
+        });
+      </script>
+
     # code-overflow: wrap
-    code-line-numbers: true
+    # code-line-numbers: true
