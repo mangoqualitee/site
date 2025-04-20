@@ -1,0 +1,33 @@
+[
+  {
+    "listing": "/content/DynamicsSimulations/index.html",
+    "items": [
+      "/content/DynamicsSimulations/problem01/index.html",
+      "/content/DynamicsSimulations/problem02/index.html",
+      "/content/DynamicsSimulations/problem03/index.html",
+      "/content/DynamicsSimulations/problem04/index.html",
+      "/content/DynamicsSimulations/problem05/index.html",
+      "/content/DynamicsSimulations/problem06/index.html",
+      "/content/DynamicsSimulations/problem07/index.html",
+      "/content/DynamicsSimulations/problem08/index.html",
+      "/content/DynamicsSimulations/problem09/index.html",
+      "/content/DynamicsSimulations/problem10/index.html",
+      "/content/DynamicsSimulations/problem11/index.html"
+    ]
+  },
+  {
+    "listing": "/content/Blog/index.html",
+    "items": [
+      "/content/Blog/posts/post-with-code/index.html",
+      "/content/Blog/posts/welcome/index.html"
+    ]
+  },
+  {
+    "listing": "/content/Resources/index.html",
+    "items": [
+      "/content/Resources/checkmate/index.html",
+      "/content/Resources/windmill/index.html",
+      "/content/Resources/turn-the-led-on/index.html"
+    ]
+  }
+]

@@ -4,3 +4,66 @@ pre, code, .sourceCode {
   font-family: Iosevka;
   /* font-size: 1.1em; */
 }
+
+.navbar {
+  border-bottom: 2px dotted grey;
+  padding: 17px;
+}
+
+.navbar-title {
+  text-transform: uppercase;
+  font-family: ETBookRoman,warnock-pro,Palatino,"Palatino Linotype","Palatino LT STD","Book Antiqua",Georgia,serif;
+}
+
+h1 {
+  font-family: ETBookRoman,warnock-pro,Palatino,"Palatino Linotype","Palatino LT STD","Book Antiqua",Georgia,serif;
+}
+h1.title {
+  text-transform: capitalize;
+  font-size: 5em;
+  font-weight: normal !important;
+}
+h1:not(.title) {
+  border-bottom: 2px solid;
+}
+
+
+.quarto-title-block .quarto-title-banner {
+  position: relative;
+  background-size: cover;
+  background-position: right;
+  background-repeat: no-repeat;
+  /* background-attachment: fixed; */
+  padding-top: 25%;
+}
+
+.quarto-title-banner::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, var(--bs-body-bg) 30%, rgba(0, 0, 0, 0) 70%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.quarto-title-banner::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--bs-body-bg);
+  opacity: var(--overlay-opacity, 0);
+  transition: opacity 0.3s ease;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.quarto-title-banner h1.title {
+  position: relative;
+  z-index: 1; /* Ensure the title appears above the gradient */
+}
