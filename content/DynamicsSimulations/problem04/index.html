@@ -168,6 +168,11 @@ window.Quarto = {
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
   <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
 </div>
       </div> <!-- /container-fluid -->
     </nav>
@@ -179,9 +184,6 @@ window.Quarto = {
         <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../content/DynamicsSimulations/index.html">Dynamics</a></li><li class="breadcrumb-item"><a href="../../../content/DynamicsSimulations/problem04/index.html">problem04</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
-      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
-        <i class="bi bi-search"></i>
-      </button>
     </div>
   </nav>
 </header>
@@ -189,11 +191,6 @@ window.Quarto = {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-        <div class="mt-2 flex-shrink-0 align-items-center">
-        <div class="sidebar-search">
-        <div id="quarto-search" class="" title="Search"></div>
-        </div>
-        </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item sidebar-item-section">
@@ -316,7 +313,7 @@ window.Quarto = {
 
 
 <blockquote class="blockquote">
-<p>4. <em>Cross product: geometry vs components.</em></p>
+<p>4. <strong>Cross product: geometry vs components.</strong></p>
 <pre><code>a) The geometric definition of crossproduct is this $\vec{a} \times \vec{b}$ is a vector $\vec{c}$ with magnitude $\|\vec{a}\|\|\vec{b}\|\sin\theta_{ab}$ that is orthmorogonal to $\vec{a}$ and $vec{b}$ in the direction given by the right hand rule. Use this definition to findan alternative geometric definition involving projection (namely: project $\vec{b}$ onto theplane that is orthogonal to $\vec{a}$; then stretch it by $\vec{|a|}$; then rotate it $\pi/2$ around the $\vec{a}$ axis). Use that definition to show the distributive rule $\vec{a} \times (\vec{b} + \vec{c}) = \vec{a} \times \vec{b} + \vec{a} \times \vec{c}$.  
 b) Then use the distributive rule to find the component formula for cross product,namely that $\vec{a} \times \vec{b} = (a_2 b_3 − a_3 b_2)\hat{e}_1 + (a_3 b_1 − a_1 b_3) \hat{e}_2 + (a_1 b_2 − a_2 b_1)\hat{e}_3$.  </code></pre>
 <p>Note that, this distributive law implies that, for given <span class="math inline">\(va \times \vec{v}\)</span> is a linear operator.That is <span class="math inline">\(va \times \vec{v}\)</span> is a linear function fo <span class="math inline">\(\vec{v}\)</span>. Later in the course we will use this to replacethe cross product with a tensor product. Hint: You can read about this in, say, theRuina/Pratap book (box 1.7).</p>

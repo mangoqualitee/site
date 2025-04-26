@@ -202,6 +202,11 @@ window.Quarto = {
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
   <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
 </div>
       </div> <!-- /container-fluid -->
     </nav>
@@ -213,9 +218,6 @@ window.Quarto = {
         <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../content/DynamicsSimulations/index.html">Dynamics</a></li><li class="breadcrumb-item"><a href="../../../content/DynamicsSimulations/problem11/index.html">problem11</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
-      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
-        <i class="bi bi-search"></i>
-      </button>
     </div>
   </nav>
 </header>
@@ -223,11 +225,6 @@ window.Quarto = {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-        <div class="mt-2 flex-shrink-0 align-items-center">
-        <div class="sidebar-search">
-        <div id="quarto-search" class="" title="Search"></div>
-        </div>
-        </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item sidebar-item-section">
@@ -400,18 +397,257 @@ window.Quarto = {
 <div class="no-row-height column-margin column-container"><div class="">
 <p>TODO: add graph for velocity vs radius</p>
 </div></div></section>
-<section id="b-by-numerical-experiments-and-trial-and-error-try-to-find-a-periodic-motion-that-is-neither-circular-nor-a-straight-line-for-some-central-force-besides-f-kr-or-f-fracgmmr2-.-a-not-with-a-linear-zero-rest-length-spring-b-not-with-inverse-square-gravity-c-not-circular-motion-and-d-not-straight-line-motion." class="level1">
+<section id="b-by-numerical-experiments-and-trial-and-error-try-to-find-a-periodic-motion-that-is-neither-circular-nor-a-straight-line-for-some-central-force-besides-f-kr-or-f-fracgmmr2-.-a-not-with-a-linear-zero-rest-length-spring-b-not-with-inverse-square-gravity-c-not-circular-motion-and-d-not-straight-line-motion." class="level1 page-columns page-full">
 <h1>(b) By numerical experiments, and trial and error, try to find a periodic motion that is neither circular nor a straight line, for some central force besides <span class="math inline">\(F = −kr\)</span> or <span class="math inline">\(F = \frac{−GmM}{r2}\)</span> . a) not with a linear zero-rest length spring; b) not with inverse-square gravity; c) not circular motion; and d) not straight-line motion.</h1>
-<p>To do this in julia, I use the very nice notation of <code>NamedTuple</code>s (to skip unpacking):</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">f</span>((; u⃗₀, t), p)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    dynamics_prob <span class="op">=</span> ProblemSetup.<span class="fu">create_problem</span>(u⃗₀, t, p)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    u⃗ₜ <span class="op">=</span> DifferentialEquations.<span class="fu">solve</span>(dynamics_prob)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    Δu⃗ <span class="op">=</span> u⃗ₜ <span class="op">-</span> u⃗₀</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    Δu⃗</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>z⃗₀ <span class="op">=</span> (u⃗₀<span class="op">=</span>[<span class="fl">1.0</span>;<span class="fl">1.0</span>;<span class="fl">1.0</span>;<span class="fl">1.0</span>], t<span class="op">=</span><span class="fl">1.0</span>)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>root_finding_prob <span class="op">=</span> NonlinearSolve.<span class="fu">NonlinearProblem</span>(f, z⃗₀, p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>First of all, I would like to note here that this was the most interesting and fun and investing problem so far in this problem set. I have spent almost 18 hours spread over 6 days on this problem.</p>
+<p>We begin by formulating our problem:</p>
+<p>For example, an interesting central force field is this:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">dipolepowerlaw</span>(r⃗, p)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    p₁ <span class="op">=</span> [<span class="fl">1.0</span>, <span class="fl">0.0</span>]</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    p₂ <span class="op">=</span> [<span class="fl">0.0</span>, <span class="op">+</span><span class="fl">1.0</span>]</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    p₃ <span class="op">=</span> [<span class="op">-</span><span class="fl">1.0</span>, <span class="fl">0.0</span>]</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    p₄ <span class="op">=</span> [<span class="fl">0.0</span>, <span class="op">-</span><span class="fl">1.0</span>]</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    points <span class="op">=</span> [p₁,p₂,p₃,p₄]</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    norms <span class="op">=</span> <span class="fu">norm</span>.((r⃗ <span class="op">.-</span> points))</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    k <span class="op">=</span> <span class="op">-</span><span class="fl">2</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    F <span class="op">=</span> <span class="fu">sum</span>(<span class="fu">inversepower</span>.(norms, <span class="dt">Ref</span>{k}))</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> F</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co">#...</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">F</span>(r⃗, p)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">dipolepowerlaw</span>(r⃗, p)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># speedindependentofradius(r⃗, p)</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># inversepowerlaw(r⃗, p)</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># hillinvalley(r⃗, p)</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co">#...</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">centralforce!</span>(du, u, p, t)</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    r⃗ <span class="op">=</span> u[<span class="fl">1</span><span class="op">:</span><span class="fl">2</span>]</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    v⃗ <span class="op">=</span> u[<span class="fl">3</span><span class="op">:</span><span class="fl">4</span>]</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    r̂ <span class="op">=</span> <span class="fu">normalize</span>(r⃗)</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    F⃗ <span class="op">=</span> <span class="fu">F</span>(r⃗, p) <span class="op">*</span> (<span class="op">-</span>r̂)</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    a⃗ <span class="op">=</span> F⃗ <span class="op">/</span> p.m</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    du[<span class="fl">1</span><span class="op">:</span><span class="fl">2</span>] <span class="op">=</span> v⃗</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>    du[<span class="fl">3</span><span class="op">:</span><span class="fl">4</span>] <span class="op">=</span> a⃗</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The graph for this magnitude of this central force field looks like this:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../media/problem11/problem11-dipolepowerlaw-graph.png" class="img-fluid figure-img"></p>
+<figcaption>Dipole power law</figcaption>
+</figure>
+</div>
+<p>For any such <code>function centralforce!(du, u::State, p::Parameters, tend:Time)::State</code>, we want to find a <span class="math inline">\(\vec{u}_0\)</span> such that, for <span class="math inline">\(\vec{u}_t\)</span> = <code>DifferentialEquations.solve(odeprob)[end]</code></p>
+<p><span class="math display">\[\vec{u}_t - \vec{u}_0 = \vec{0}\]</span></p>
+<p>Which is equivalent to finding a zero to the following function <code>f</code>, in file <a href="./CentralForce/src/RootFinding.jl">./CentralForce/src/RootFinding.jl</a>:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">f</span>(z⃗₀, p) <span class="op">=</span> <span class="cf">begin</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    tol <span class="op">=</span> <span class="fl">1e-12</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    u⃗₀ <span class="op">=</span> z⃗₀[<span class="fl">1</span><span class="op">:</span><span class="kw">end</span><span class="op">-</span><span class="fl">1</span>]</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    tend <span class="op">=</span> z⃗₀[<span class="kw">end</span>]</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    dynamics_prob <span class="op">=</span> ProblemSetup.<span class="fu">create_problem</span>(ProblemSetup.ode!, u⃗₀, tend, p)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    dynamics_sol <span class="op">=</span> DifferentialEquations.<span class="fu">solve</span>(dynamics_prob; abstol<span class="op">=</span>tol, reltol<span class="op">=</span>tol, save_everystep<span class="op">=</span><span class="cn">false</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    u⃗ₜ <span class="op">=</span> dynamics_sol.u[<span class="kw">end</span>]</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    Δu⃗ <span class="op">=</span> u⃗ₜ <span class="op">-</span> u⃗₀</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    phasecondition <span class="op">=</span> u⃗₀[<span class="fl">2</span>] <span class="co"># crosses the x axis</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># v⃗₀ = u⃗₀[3:4]</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># limit = 0.1</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># if LinearAlgebra.norm(v⃗₀) &lt; limit || tend &lt; 0.1</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="co">#     return zeros(5) .+ 1.0</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># end</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Δu⃗</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [Δu⃗; phasecondition]</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>One challenge I overcame after much thinking is regarding the <code>phasecondition</code>, the number of variables to solve for should equal the number of equations, earlier the input dimension was five: <span class="math inline">\((x, y, vx, vy, tend)\)</span> while the output dimension was four <code>(Δx, Δy, Δvx, Δvy)</code>.</p>
+<p>The following is the question I asked in a julia help group online:</p>
+<p>In the non-linear root finding, does the input dimension have to match the output dimensions?</p>
+<p>Right now I have input output dimension as 5, 4 respectively. input (5): (x, y, vx, vy, tend) output (4): (Δx, Δy, Δvx, Δvy )</p>
+<p>Somehow I feel this is not ideal. The system of nonlinear equations feels under defined. So, to correct this I added the constraint of solution roots should start on the y axis, i.e x = 0</p>
+<p>In my system this is equivalent to:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">f</span>(z⃗₀, p) <span class="op">=</span> <span class="cf">begin</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    tol <span class="op">=</span> <span class="fl">1e-12</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    u⃗₀ <span class="op">=</span> z⃗₀[<span class="fl">1</span><span class="op">:</span><span class="kw">end</span><span class="op">-</span><span class="fl">1</span>]</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    tend <span class="op">=</span> z⃗₀[<span class="kw">end</span>]</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    dynamics_prob <span class="op">=</span> ProblemSetup.<span class="fu">create_problem</span>(ProblemSetup.ode!, u⃗₀, tend, p)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    dynamics_sol <span class="op">=</span> DifferentialEquations.<span class="fu">solve</span>(dynamics_prob; abstol<span class="op">=</span>tol, reltol<span class="op">=</span>tol, save_everystep<span class="op">=</span><span class="cn">false</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    u⃗ₜ <span class="op">=</span> dynamics_sol.u[<span class="kw">end</span>]</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    Δu⃗ <span class="op">=</span> u⃗ₜ <span class="op">-</span> u⃗₀</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    phasecondition <span class="op">=</span> u⃗₀[<span class="fl">2</span>] <span class="co"># crosses the x axis</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># v⃗₀ = u⃗₀[3:4]</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># limit = 0.1</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># if LinearAlgebra.norm(v⃗₀) &lt; limit || tend &lt; 0.1</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    <span class="co">#     return zeros(5) .+ 1.0</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># end</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># return Δu⃗</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [Δu⃗; phasecondition]</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>But now the root finder is giving me this warning and gets stuck:</p>
+<pre><code> Warning: Interrupted. Larger maxiters is needed. If you are using an integrator for non-stiff ODEs or an automatic switching algorithm (the default), you may want to consider using a method for stiff equations. See the solver pages for more details (e.g. https://docs.sciml.ai/DiffEqDocs/stable/solvers/ode_solve/#Stiff-Problems).
+└ @ SciMLBase ~/.julia/packages/SciMLBase/cwnDi/src/integrator_interface.jl:589
+┌ Warning: Potential Rank Deficient Matrix Detected. Attempting to solve using Pivoted QR Factorization.
+└ @ NonlinearSolveBaseLinearSolveExt ~/.julia/packages/NonlinearSolveBase/yZeYz/ext/NonlinearSolveBaseLinearSolveExt.jl:33
+┌ Warning: At t=1.619487808996462e18, dt was forced below floating point epsilon 256.0, and step error estimate = 1.7742389634428446. Aborting. There is either an error in your model specification or the true solution is unstable (or the true solution can not be represented in the precision of Float64).
+└ @ SciMLBase ~/.julia/packages/SciMLBase/cwnDi/src/integrator_interface.jl:623
+┌ Warning: Interrupted. Larger maxiters is needed. If you are using an integrator for non-stiff ODEs or an automatic switching algorithm (the default), you may want to consider using a method for stiff equations. See the solver pages for more details (e.g. https://docs.sciml.ai/DiffEqDocs/stable/solvers/ode_solve/#Stiff-Problems).
+└ @ SciMLBase ~/.julia/packages/SciMLBase/cwnDi/src/integrator_interface.jl:589
+┌ Warning: Potential Rank Deficient Matrix Detected. Attempting to solve using Pivoted QR Factorization.
+└ @ NonlinearSolveBaseLinearSolveExt ~/.julia/packages/NonlinearSolveBase/yZeYz/ext/NonlinearSolveBaseLinearSolveExt.jl:33
+┌ Warning: At t=1.619487808996462e18, dt was forced below floating point epsilon 256.0, and step error estimate = 1.7742389634428446. Aborting. There is either an error in your model specification or the true solution is unstable (or the true solution can not be represented in the precision of Float64).
+└ @ SciMLBase ~/.julia/packages/SciMLBase/cwnDi/src/integrator_interface.jl:623
+Is this because the phasecondition is linearly dependent to the state vector, I don't feel that is the case. What is going on?</code></pre>
+<p>The answer I got was by <code>@romanveltz</code>: “BifurcationKit does all that already”.</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>TODO: Explore how <a href="https://github.com/bifurcationkit/BifurcationKit.jl">BifurcationKit.jl</a> achieves non-linear root finding.</p>
+</div></div><p>We can formulate the solution to this either in an optimization way, or a root finding way.</p>
+<p>One way to feed the initial conditions to the root solver is to keep doubling the norm of the initial condition vector, this is to avoid trivial roots: <span class="math inline">\(tend = 0\)</span> or <span class="math inline">\(v_0 = 0\)</span></p>
+<p>In julia, I use the <code>NonlinearSolver</code>. In file <a href="./CentralForce/src/RootFinding.jl">./CentralForce/src/RootFinding.jl</a>:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">strategy_exponentiate</span>()</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">randunitvec</span>() <span class="op">=</span> <span class="cf">begin</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>        θ <span class="op">=</span> <span class="fl">2</span><span class="fu">π*rand</span>()</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>        r <span class="op">=</span> <span class="fu">√</span>(<span class="fu">rand</span>())</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        r<span class="op">*</span>[<span class="fu">cos</span>(θ); <span class="fu">sin</span>(θ)]</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    tend_limit <span class="op">=</span> <span class="fl">16000</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    v₀_limit <span class="op">=</span> <span class="fl">1600</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    tend_init <span class="op">=</span> <span class="fl">1.0</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    v₀_init <span class="op">=</span> <span class="fl">1.0</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    factor <span class="op">=</span> <span class="fl">2</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    periodic_sol <span class="op">=</span> <span class="fu">Vector</span><span class="dt">{Float64}</span>(<span class="cn">undef</span>, <span class="fl">5</span>)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    istrivial_tend_init <span class="op">=</span> <span class="cn">true</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    istrivial_v₀_init <span class="op">=</span> <span class="cn">true</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">varsinlimit</span>() <span class="op">=</span> <span class="cf">begin</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>        ((tend_init <span class="op">&lt;</span> tend_limit) <span class="op">&amp;&amp;</span> (v₀_init <span class="op">&lt;</span> v₀_limit))</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">varstrivial</span>() <span class="op">=</span> <span class="cf">begin</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>        (istrivial_tend_init <span class="op">||</span> istrivial_v₀_init)</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="fu">varsinlimit</span>() <span class="op">&amp;&amp;</span> <span class="fu">varstrivial</span>()</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>        <span class="co"># local tend_init, istrivial_tend_init, v₀_init, istrivial_v₀_init, periodic_sol</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>        u⃗₀_init <span class="op">=</span> [<span class="fl">100</span><span class="fu">*randunitvec</span>(); v₀_init <span class="op">*</span> <span class="fu">randunitvec</span>()]</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>        z⃗₀_init <span class="op">=</span> [u⃗₀_init; tend_init]</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>        root_prob <span class="op">=</span> NonlinearSolve.<span class="fu">NonlinearProblem</span>(RootFinding.f, z⃗₀_init, ProblemSetup.p)</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>        root_sol <span class="op">=</span> NonlinearSolve.<span class="fu">solve</span>(root_prob)</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>        <span class="fu">println</span>(<span class="st">"Solver status: "</span>, root_sol.retcode)</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>        <span class="fu">println</span>(<span class="st">"Residual norm: "</span>, <span class="bu">LinearAlgebra</span>.<span class="fu">norm</span>(root_sol.resid))</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>        u⃗₀_sol <span class="op">=</span> root_sol[<span class="fl">1</span><span class="op">:</span><span class="kw">end</span> <span class="op">-</span> <span class="fl">1</span>]</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>        tend_sol <span class="op">=</span> root_sol[<span class="kw">end</span>]</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>        v⃗₀_sol <span class="op">=</span> u⃗₀_sol[<span class="fl">3</span><span class="op">:</span><span class="fl">4</span>]</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>        v₀_sol <span class="op">=</span> <span class="bu">LinearAlgebra</span>.<span class="fu">norm</span>(v⃗₀_sol)</span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>        <span class="fu">println</span>(<span class="st">" ; root:tend_sol "</span>, tend_sol, <span class="st">" ; root:v₀_sol "</span>, v₀_sol)</span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>        lowerlimit <span class="op">=</span> <span class="fl">0.1</span></span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>        istrivial_tend_init <span class="op">=</span> (tend_sol <span class="op">&lt;</span> lowerlimit)</span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>        istrivial_v₀_init <span class="op">=</span> (v₀_sol <span class="op">&lt;</span> lowerlimit)</span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="fu">varstrivial</span>()</span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>            tend_init <span class="op">*=</span> factor</span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>            v₀_init <span class="op">*=</span> factor</span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span></span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>            <span class="fu">println</span>(<span class="st">"Congratulations, found non-trivial periodic orbit"</span>)</span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>            periodic_sol <span class="op">=</span> root_sol</span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>        <span class="cf">end</span></span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>        <span class="fu">println</span>(<span class="st">"something trivial? : "</span>, <span class="fu">varstrivial</span>())</span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>    <span class="co"># periodic_sol = </span></span>
+<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>    <span class="co"># u⃗₀_periodic = periodic_sol[1:4]</span></span>
+<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a>    <span class="co"># tend_periodic = periodic_sol[5]</span></span>
+<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a>    <span class="co"># # plot the periodic solution</span></span>
+<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a>    <span class="co"># plot_solution(ode!, u⃗₀_periodic, tend_periodic, p)</span></span>
+<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> periodic_sol</span>
+<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Another strategy is to sample and pass every point in a mesh as a initial state to the solver, in the same file</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">strategy_meshcheck</span>()</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    K <span class="op">=</span> <span class="fl">100.0</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    N <span class="op">=</span> <span class="fl">10</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    meshrange <span class="op">=</span> <span class="fu">range</span>(<span class="op">-</span>K, K, N)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    meshtime <span class="op">=</span> <span class="fu">range</span>(<span class="fl">0.0</span>, K, N)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    count <span class="op">=</span> <span class="fl">0</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    roots <span class="op">=</span> []</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">println</span>(<span class="st">"Hello"</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> x <span class="kw">in</span> meshrange</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> y <span class="kw">in</span> meshrange</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> vx <span class="kw">in</span> meshrange</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>                <span class="cf">for</span> vy <span class="kw">in</span> meshrange</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">for</span> t <span class="kw">in</span> meshtime</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>                        <span class="kw">global</span> count</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>                        r <span class="op">=</span> <span class="bu">LinearAlgebra</span>.<span class="fu">norm</span>([x;y])</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>                        v <span class="op">=</span> <span class="bu">LinearAlgebra</span>.<span class="fu">norm</span>([vx;vy])</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>                        <span class="cf">if</span> r <span class="op">&lt;</span> <span class="fl">1.0</span> <span class="op">||</span> v <span class="op">&lt;</span> <span class="fl">1.0</span> <span class="op">||</span> t <span class="op">&lt;</span> <span class="fl">1.0</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">println</span>(<span class="st">"skipping small cases"</span>)</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>                            <span class="cf">continue</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>                        <span class="cf">end</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>                        z⃗₀_init <span class="op">=</span> [x; y; vx; vy; t]</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>                        root_prob <span class="op">=</span> NonlinearSolve.<span class="fu">NonlinearProblem</span>(RootFinding.f, z⃗₀_init, ProblemSetup.p)</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>                        <span class="fu">println</span>(z⃗₀_init)</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>                        root_sol <span class="op">=</span> NonlinearSolve.<span class="fu">solve</span>(root_prob)</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>                        count <span class="op">+=</span> <span class="fl">1</span></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>                        percentage <span class="op">=</span> <span class="fl">100</span><span class="op">*</span>count <span class="op">/</span> (N<span class="op">^</span><span class="fu">length</span>(z⃗₀_init))</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>                        <span class="fu">println</span>(percentage, <span class="st">"% completed"</span>)</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>                        <span class="cf">if</span> root_sol.retcode <span class="op">==</span> NonlinearSolve.ReturnCode.Success</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">push!</span>(roots, root_sol)</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>                        <span class="cf">end</span></span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">end</span></span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>                <span class="cf">end</span></span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>            <span class="cf">end</span></span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>        <span class="cf">end</span></span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>    <span class="fu">println</span>(<span class="st">"Successfuly converged solutions: "</span>, roots)</span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The root finder was not converging for me for these.</p>
+<p>But still with a bit of intuition I was able to find a non trivial Central Force Field with a non trivial periodic orbit, <a href="./CentralForce/src/Physics.jl">./CentralForce/src/Physics.jl</a>:</p>
+<p>For the following force field:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#...</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">hillinvalley</span>(r⃗, p)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    r <span class="op">=</span> <span class="fu">norm</span>(r⃗)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    σ <span class="op">=</span> <span class="fl">5</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> <span class="fl">5</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="cn">e</span> <span class="op">=</span> <span class="fu">a*exp</span>(<span class="op">-</span>σ<span class="op">*</span>r<span class="op">^</span><span class="fl">2</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> r<span class="op">^</span><span class="fl">2</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    F <span class="op">=</span> <span class="cn">e</span><span class="op">+</span>p <span class="co">#-a</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co">#...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The graph of the magnitude of this force field:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../media/problem11/problem11-hillinvalley-graph.png" class="img-fluid figure-img"></p>
+<figcaption>problem11-hillinvalley-graph.png</figcaption>
+</figure>
+</div>
+<p>With the follwoing intiial conditions, in file <a href="./CentralForce/src/CentralForce.jl">./CentralForce/src/CentralForce.jl</a>:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#...</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>tol <span class="op">=</span> <span class="fl">1e-12</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">plot_solution</span>(u⃗₀, tend)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    ode_prob <span class="op">=</span> ProblemSetup.<span class="fu">create_problem</span>(ProblemSetup.ode!, u⃗₀, tend, ProblemSetup.p)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    sol <span class="op">=</span> DifferentialEquations.<span class="fu">solve</span>(ode_prob, DifferentialEquations.<span class="fu">Tsit5</span>(); abstol<span class="op">=</span>tol, reltol<span class="op">=</span>tol, saveat<span class="op">=</span><span class="fl">0.01</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    trajectory <span class="op">=</span> Visualization.<span class="fu">plot_trajectory</span>(sol)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    GLMakie.<span class="fu">save</span>(<span class="st">"./trajectory-solution.png"</span>, trajectory)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    GLMakie.<span class="fu">display</span>(trajectory)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co">#...</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>tend <span class="op">=</span> <span class="fl">50000.0</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>r⃗ <span class="op">=</span> [<span class="fl">5</span>, <span class="fl">5</span>]</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>v <span class="op">=</span> <span class="fl">5.4225</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>v⃗ <span class="op">=</span> [<span class="op">-</span>v, v]</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>u⃗₀ <span class="op">=</span> [r⃗; v⃗]</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_solution</span>(u⃗₀, tend)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>We get the <strong>very periodic</strong> orbit, ‘very’ meaning I dont have an analytical proof yet but have tested it for <code>tend=5000</code>:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../media/problem11/problem11-hillinvalley-trajectory.png" class="img-fluid figure-img"></p>
+<figcaption>problem11-hillinvalley-trajectory.png</figcaption>
+</figure>
+</div>
+<p>The inconsistent use of <code>code blocks</code> and <span class="math inline">\(math blocks\)</span> was an intentional fast.</p>
 
 
 </section>

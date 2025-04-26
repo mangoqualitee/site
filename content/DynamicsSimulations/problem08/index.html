@@ -202,6 +202,11 @@ window.Quarto = {
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
   <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
 </div>
       </div> <!-- /container-fluid -->
     </nav>
@@ -213,9 +218,6 @@ window.Quarto = {
         <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../content/DynamicsSimulations/index.html">Dynamics</a></li><li class="breadcrumb-item"><a href="../../../content/DynamicsSimulations/problem08/index.html">problem08</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
-      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
-        <i class="bi bi-search"></i>
-      </button>
     </div>
   </nav>
 </header>
@@ -223,11 +225,6 @@ window.Quarto = {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-        <div class="mt-2 flex-shrink-0 align-items-center">
-        <div class="sidebar-search">
-        <div id="quarto-search" class="" title="Search"></div>
-        </div>
-        </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item sidebar-item-section">
@@ -359,7 +356,7 @@ window.Quarto = {
 
 
 <blockquote class="blockquote">
-<p>8. Simplest dynamics with Polar coordinates. This is the simplest dynamics problem, but posed in polar coordinates. Assume a particle is on a plane with no force on it. So, you know it moves at constant speed in a constant direction. a. Write the differential equations <span class="math inline">\(\vec{a} = \vec{0}\)</span> in polar coordinates. b. Solve them numerically for various initial conditions. c.&nbsp;Plot the solution and check that the motion is a straight line at constant speed. d.&nbsp;Using your numerical result, pick a way to measure how straight the path is, and see how straight a line your polar coordinate solution gives. You should define a quantitative measure of straightness, and then measure it with your solution. e. Is the path more straight when you refine the numerical tolerances.</p>
+<p>8. <strong>Simplest dynamics with Polar coordinates.</strong> This is the simplest dynamics problem, but posed in polar coordinates. Assume a particle is on a plane with no force on it. So, you know it moves at constant speed in a constant direction. a. Write the differential equations <span class="math inline">\(\vec{a} = \vec{0}\)</span> in polar coordinates. b. Solve them numerically for various initial conditions. c.&nbsp;Plot the solution and check that the motion is a straight line at constant speed. d.&nbsp;Using your numerical result, pick a way to measure how straight the path is, and see how straight a line your polar coordinate solution gives. You should define a quantitative measure of straightness, and then measure it with your solution. e. Is the path more straight when you refine the numerical tolerances.</p>
 </blockquote>
 <section id="a.-write-differential-equations-in-polar-form" class="level1">
 <h1>a. Write differential equations in polar form</h1>
