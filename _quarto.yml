@@ -27,9 +27,9 @@ website:
       - href: content/Blog/index.xml
         icon: rss
 
+  reader-mode: true
   sidebar:
     - id: dynamics
-      search: true
       contents: content/DynamicsSimulations
       alignment: left
 
