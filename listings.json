@@ -1,18 +1,27 @@
 [
   {
+    "listing": "/content/Resources/index.html",
+    "items": [
+      "/content/Resources/material/emacs/index.html",
+      "/content/Resources/material/page-rank.html",
+      "/content/Resources/material/the-odin-project/index.html",
+      "/content/Resources/material/topics-on-tournaments/index.html"
+    ]
+  },
+  {
     "listing": "/content/DynamicsSimulations/index.html",
     "items": [
-      "/content/DynamicsSimulations/problem01/index.html",
-      "/content/DynamicsSimulations/problem02/index.html",
-      "/content/DynamicsSimulations/problem03/index.html",
-      "/content/DynamicsSimulations/problem04/index.html",
-      "/content/DynamicsSimulations/problem05/index.html",
-      "/content/DynamicsSimulations/problem06/index.html",
-      "/content/DynamicsSimulations/problem07/index.html",
-      "/content/DynamicsSimulations/problem08/index.html",
-      "/content/DynamicsSimulations/problem09/index.html",
-      "/content/DynamicsSimulations/problem10/index.html",
-      "/content/DynamicsSimulations/problem11/index.html"
+      "/content/DynamicsSimulations/solutions/problem01/index.html",
+      "/content/DynamicsSimulations/solutions/problem02/index.html",
+      "/content/DynamicsSimulations/solutions/problem03/index.html",
+      "/content/DynamicsSimulations/solutions/problem04/index.html",
+      "/content/DynamicsSimulations/solutions/problem05/index.html",
+      "/content/DynamicsSimulations/solutions/problem06/index.html",
+      "/content/DynamicsSimulations/solutions/problem07/index.html",
+      "/content/DynamicsSimulations/solutions/problem08/index.html",
+      "/content/DynamicsSimulations/solutions/problem09/index.html",
+      "/content/DynamicsSimulations/solutions/problem10/index.html",
+      "/content/DynamicsSimulations/solutions/problem11/index.html"
     ]
   },
   {
@@ -20,14 +29,6 @@
     "items": [
       "/content/Blog/posts/post-with-code/index.html",
       "/content/Blog/posts/welcome/index.html"
-    ]
-  },
-  {
-    "listing": "/content/Resources/index.html",
-    "items": [
-      "/content/Resources/checkmate/index.html",
-      "/content/Resources/windmill/index.html",
-      "/content/Resources/turn-the-led-on/index.html"
     ]
   }
 ]
