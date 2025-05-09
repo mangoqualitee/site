@@ -7,3 +7,6 @@
 [submodule "content/Resources"]
 	path = content/Resources
 	url = git@github-vishalpaudel:mangoqualitee/Resources
+[submodule "content/Syllabus"]
+	path = content/Syllabus
+	url = git@github-vishalpaudel:mangoqualitee/Syllabus

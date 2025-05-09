@@ -1,0 +1,68 @@
+/* Metadata Styling */
+.metadata-container {
+  background-color: #f8f9fa;
+  border-left: 4px solid #007bff;
+  padding: 1rem;
+  margin-bottom: 2rem;
+  border-radius: 4px;
+}
+
+.metadata-container h1.title {
+  margin-top: 0;
+}
+
+.metadata-container .description,
+.metadata-container .status,
+.metadata-container .contributors,
+.metadata-container .categories,
+.metadata-container .urls {
+  margin: 0.5rem 0;
+}
+
+/* Status indicators */
+.status-done {
+  background-color: #28a745;
+  color: white;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.9rem;
+}
+
+.status-inprogress {
+  background-color: #ffc107;
+  color: #212529;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.9rem;
+}
+
+.status-planned {
+  background-color: #17a2b8;
+  color: white;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.9rem;
+}
+
+/* Categories */
+.category {
+  background-color: #e9ecef;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.9rem;
+}
+
+/* Contributors */
+.contributor {
+  font-style: italic;
+}
+
+/* URLs */
+.resource-url {
+  display: inline-block;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
+}

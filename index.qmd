@@ -1,14 +1,24 @@
 ---
 title: "gyan's sight"
-title-block-banner: url("https://res.cloudinary.com/lesswrong-2-0/image/upload/f_auto,q_auto/v1/mirroredImages/Significantly%20Enhancing%20Adult%20Intelligence%20With%20Gene%20Editing%20May%20Be%20Possible_A_scientific_illustration_of_a_g_0.3046069717280864/tpukdzzoaqtq0fpqn3ol")
+title-block-banner: media/seed-idea.jpeg
+
+sidebar: gyan
 ---
 
 ::: {.callout-note}
-## This is Gyan's [PKM]() site.
+## This is Gyan's PKM Sight.
+
+PKM (personal knowlege management)
 :::
 
-::: {.callout-caution collapse="true"}
+::: {.callout-caution}
 ## Expand To Learn About Gyan
 
-Gyan (gyanantaran), is a creator therefore a learner. Read more [about this site](about.qmd).
+Gyan ([@haxfn](https://github.com/haxfn)), is a creator therefore a learner.
+:::
+
+::: {.callout-important}
+## Expand to Learn About this Site
+
+Sight (site), is a presentation of Gyan's Sight.
 :::
