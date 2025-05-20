@@ -9,21 +9,22 @@ project:
 website:
   title: "gyan's sight"
   favicon: media/favicon_lncumn.ico
-  site-url: https://haxfn.github.io/meta-site/
+  site-url: https://mangoqualitee.github.io/site
 
   navbar: false
-    # toggle-position: right
-    # pinned: true
-    # collapse-below: xxl
-    # left:
-    #   - href: index.qmd
-    #     text: Home
-    #   - content/DynamicsSimulations/index.qmd
-    #   - content/Resources/index.qmd
-    #   - content/Blog/index.qmd
-    # right:
-    #   - href: content/Blog/index.xml
-    #     icon: rss
+  # navbar:
+  #   toggle-position: right
+  #   pinned: true
+  #   collapse-below: xxl
+  #   left:
+  #     - href: index.qmd
+  #       text: Home
+  #     - content/DynamicsSimulations/index.qmd
+  #     - content/Resources/index.qmd
+  #     - content/Blog/index.qmd
+  #   right:
+  #     - href: content/Blog/index.xml
+  #       icon: rss
 
   reader-mode: true
   sidebar:
@@ -35,14 +36,21 @@ website:
       title: <a href="/content/DynamicsSimulations/">Dynamics and Simulations</a>
       # logo: content/DynamicsSimulations/media/problem05/ruina-pratap-cover.jpg
       # logo-href: /content/DynamicsSimulations/index.qmd
-
-      contents: content/DynamicsSimulations/
+      contents: content/DynamicsSimulations/solutions
       tools:
         - icon: github
           href: https://github.com/gyanantaran/DynamicsSimulations
 
+    - id: blog
+      title: <a href="/content/Blog/">Blog</a>
+      contents: content/Blog/posts
+      tools:
+        - icon: twitter
+          href: https://twitter.com/gyanantaran
+
     - id: resources
-      contents: content
+      title: <a href="/content/Resources/">Resources</a>
+      contents: content/Resources/materials
       tools:
         - icon: github
           href: https://github.com/mangoqualitee/Resources
@@ -57,8 +65,8 @@ format:
     callout-collapsed: true
     callout-appearance: simple
 
-#    include-in-header:
-#      - file: panel.qmd
+   # include-in-header:
+   #   - file: panel.qmd
     header-includes: |
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/iosevka/index.css">
       <script>

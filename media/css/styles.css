@@ -65,7 +65,17 @@ h1:not(.title) {
 
 .quarto-title-banner h1.title {
   position: relative;
-  z-index: 1; /* Ensure the title appears above the gradient */
+  z-index: 10; /* Ensure the title appears above the gradient */
+}
+
+.quarto-title-banner .quarto-title-breadcrumbs {
+  position: relative;
+  z-index: 10; /* Ensure the title appears above the gradient */
+}
+
+.quarto-title-banner .description {
+  position: relative;
+  z-index: 10; /* Ensure the title appears above the gradient */
 }
 
 .breadcrumb {
