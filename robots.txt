@@ -1,1 +1,1 @@
-Sitemap: https://haxfn.github.io/meta-site/sitemap.xml
+Sitemap: https://mangoqualitee.github.io/site/sitemap.xml
